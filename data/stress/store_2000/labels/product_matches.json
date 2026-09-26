@@ -1,0 +1,116 @@
+{
+  "pairs": [
+    {
+      "raw_description": "AASHIRVAAD ATTA 5KG BAG",
+      "product_id": "SKU-ATTA-5K"
+    },
+    {
+      "raw_description": "AMUL GHEE TIN 1LTR",
+      "product_id": "SKU-GHEE-1L"
+    },
+    {
+      "raw_description": "BESAN 500 GM",
+      "product_id": "SKU-BESAN-500"
+    },
+    {
+      "raw_description": "BISLERI 1 LTR",
+      "product_id": "SKU-WATER-1L"
+    },
+    {
+      "raw_description": "BREAD BROWN 400G",
+      "product_id": "SKU-BREAD-400"
+    },
+    {
+      "raw_description": "COCA COLA PET 750 ML",
+      "product_id": "SKU-COKE-750"
+    },
+    {
+      "raw_description": "DALIA 500GM",
+      "product_id": "SKU-DALIA-500"
+    },
+    {
+      "raw_description": "FORTUNE KACHI GHANI 1L",
+      "product_id": "SKU-MUST-1L"
+    },
+    {
+      "raw_description": "FROOTI MANGO 600 ML",
+      "product_id": "SKU-FROOTI-600"
+    },
+    {
+      "raw_description": "HALDI PWD 100G",
+      "product_id": "SKU-HALDI-100"
+    },
+    {
+      "raw_description": "HARPIC POWER PLUS 500ML",
+      "product_id": "SKU-HARPIC-500"
+    },
+    {
+      "raw_description": "HARPIC POWER PLUS 500ML (BULK ORDER)",
+      "product_id": "SKU-HARPIC-500"
+    },
+    {
+      "raw_description": "KABULI CHANA 1KGS",
+      "product_id": "SKU-CHANA-1K"
+    },
+    {
+      "raw_description": "LAL MIRCH PWD 100G",
+      "product_id": "SKU-MIRCH-100"
+    },
+    {
+      "raw_description": "LIFEBUOY 4X100G",
+      "product_id": "SKU-LIFEBUOY-4"
+    },
+    {
+      "raw_description": "MAIDA 1 KG",
+      "product_id": "SKU-MAIDA-1K"
+    },
+    {
+      "raw_description": "MOONG DAL YELLOW 1 KGS",
+      "product_id": "SKU-MOONG-1K"
+    },
+    {
+      "raw_description": "POHA THICK 500 GM",
+      "product_id": "SKU-POHA-500"
+    },
+    {
+      "raw_description": "RAJMA CHITRA 1KGS",
+      "product_id": "SKU-RAJMA-1K"
+    },
+    {
+      "raw_description": "SOOJI RAVA 500 G",
+      "product_id": "SKU-SUJI-500"
+    },
+    {
+      "raw_description": "SPRITE PET 750ML",
+      "product_id": "SKU-SPRITE-750"
+    },
+    {
+      "raw_description": "SUGAR M30 1KG",
+      "product_id": "SKU-SUG-1K"
+    },
+    {
+      "raw_description": "SUNPURE OIL 1 LITRE",
+      "product_id": "SKU-OIL-1L"
+    },
+    {
+      "raw_description": "SURF EXCEL EASY WASH 1KG",
+      "product_id": "SKU-SURF-1K"
+    },
+    {
+      "raw_description": "TATA SALT 1KGS",
+      "product_id": "SKU-SALT-1K"
+    },
+    {
+      "raw_description": "TATA TEA GOLD 250GM",
+      "product_id": "SKU-TEA-250"
+    },
+    {
+      "raw_description": "TOOR DAL PREMIUM 1KG",
+      "product_id": "SKU-TOOR-1K"
+    },
+    {
+      "raw_description": "VIM BAR 500G",
+      "product_id": "SKU-VIM-500"
+    }
+  ]
+}

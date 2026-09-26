@@ -1,0 +1,20 @@
+{
+  "store": "Agarwal Kirana Store, Aliganj",
+  "promotions": [
+    {
+      "product_id": "SKU-SUG-1K",
+      "start": "2026-05-25",
+      "end": "2026-05-29",
+      "price": 47,
+      "label": "Weekend offer"
+    }
+  ],
+  "festivals": [
+    {
+      "name": "Local mela week",
+      "start": "2026-07-17",
+      "end": "2026-07-27",
+      "affects": "beverages"
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "dataset_version": "stress-seed-2039",
+  "planted_signals": [
+    {
+      "id": "M1",
+      "signal_type": "margin_leakage",
+      "product_id": "SKU-SALT-1K",
+      "expected_severity": null,
+      "facts": {
+        "cost_path": [
+          23,
+          23,
+          26
+        ],
+        "selling_price": 27
+      }
+    },
+    {
+      "id": "M2",
+      "signal_type": "margin_leakage",
+      "product_id": "SKU-OIL-1L",
+      "expected_severity": null,
+      "facts": {
+        "cost_path": [
+          109,
+          114,
+          119
+        ],
+        "selling_price": 126
+      }
+    },
+    {
+      "id": "M3",
+      "signal_type": "margin_leakage",
+      "product_id": "SKU-ATTA-5K",
+      "expected_severity": null,
+      "facts": {
+        "cost_path": [
+          190,
+          190,
+          208
+        ],
+        "selling_price": 221
+      }
+    },
+    {
+      "id": "M4",
+      "signal_type": "margin_leakage",
+      "product_id": "SKU-SUG-1K",
+      "expected_severity": null,
+      "facts": {
+        "cost_path": [
+          42,
+          42,
+          45
+        ],
+        "selling_price": 51
+      }
+    },
+    {
+      "id": "S1",
+      "signal_type": "inventory_discrepancy",
+      "product_id": "SKU-LAYS-52",
+      "expected_severity": null,
+      "facts": {
+        "stock_variance_units": -24
+      }
+    }
+  ],
+  "decoys": [
+    {
+      "id": "D1",
+      "candidate_type": "sales_spike",
+      "product_ids": [
+        "SKU-COKE-750",
+        "SKU-WATER-1L"
+      ],
+      "expected": "rejected",
+      "reason": "Festival demand"
+    },
+    {
+      "id": "D2",
+      "candidate_type": "purchase_spike",
+      "product_ids": [
+        "SKU-BREAD-400"
+      ],
+      "expected": "rejected",
+      "reason": "Off-cycle bulk purchase that reconciles"
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "dataset_version": "stress-seed-2025",
+  "planted_signals": [
+    {
+      "id": "M1",
+      "signal_type": "margin_leakage",
+      "product_id": "SKU-CHANA-1K",
+      "expected_severity": null,
+      "facts": {
+        "cost_path": [
+          130,
+          135,
+          140
+        ],
+        "selling_price": 151
+      }
+    },
+    {
+      "id": "M2",
+      "signal_type": "margin_leakage",
+      "product_id": "SKU-LAYS-52",
+      "expected_severity": null,
+      "facts": {
+        "cost_path": [
+          16,
+          16,
+          19
+        ],
+        "selling_price": 19
+      }
+    },
+    {
+      "id": "M3",
+      "signal_type": "margin_leakage",
+      "product_id": "SKU-PARLE-G",
+      "expected_severity": null,
+      "facts": {
+        "cost_path": [
+          21,
+          21,
+          24
+        ],
+        "selling_price": 23
+      }
+    },
+    {
+      "id": "S1",
+      "signal_type": "inventory_discrepancy",
+      "product_id": "SKU-LIFEBUOY-4",
+      "expected_severity": null,
+      "facts": {
+        "stock_variance_units": -8
+      }
+    }
+  ],
+  "decoys": [
+    {
+      "id": "D1",
+      "candidate_type": "sales_spike",
+      "product_ids": [
+        "SKU-COKE-750",
+        "SKU-WATER-1L"
+      ],
+      "expected": "rejected",
+      "reason": "Festival demand"
+    },
+    {
+      "id": "D2",
+      "candidate_type": "purchase_spike",
+      "product_ids": [
+        "SKU-BESAN-500"
+      ],
+      "expected": "rejected",
+      "reason": "Off-cycle bulk purchase that reconciles"
+    }
+  ]
+}

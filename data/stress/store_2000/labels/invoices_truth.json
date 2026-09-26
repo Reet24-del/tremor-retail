@@ -1,0 +1,840 @@
+[
+  {
+    "supplier_name": "Shakti Wholesale",
+    "invoice_number": "SW-789",
+    "invoice_date": "2026-05-20",
+    "currency": "INR",
+    "invoice_total": 207160,
+    "line_items": [
+      {
+        "product_id": "SKU-SUG-1K",
+        "raw_description": "SUGAR M30 1KG",
+        "quantity": 410,
+        "unit": "packet",
+        "unit_cost": 42,
+        "tax_amount": 0,
+        "line_total": 17220
+      },
+      {
+        "product_id": "SKU-BESAN-500",
+        "raw_description": "BESAN 500 GM",
+        "quantity": 120,
+        "unit": "packet",
+        "unit_cost": 50,
+        "tax_amount": 0,
+        "line_total": 6000
+      },
+      {
+        "product_id": "SKU-MIRCH-100",
+        "raw_description": "LAL MIRCH PWD 100G",
+        "quantity": 90,
+        "unit": "packet",
+        "unit_cost": 27,
+        "tax_amount": 0,
+        "line_total": 2430
+      },
+      {
+        "product_id": "SKU-TEA-250",
+        "raw_description": "TATA TEA GOLD 250GM",
+        "quantity": 170,
+        "unit": "packet",
+        "unit_cost": 152,
+        "tax_amount": 0,
+        "line_total": 25840
+      },
+      {
+        "product_id": "SKU-TOOR-1K",
+        "raw_description": "TOOR DAL PREMIUM 1KG",
+        "quantity": 170,
+        "unit": "packet",
+        "unit_cost": 131,
+        "tax_amount": 0,
+        "line_total": 22270
+      },
+      {
+        "product_id": "SKU-POHA-500",
+        "raw_description": "POHA THICK 500 GM",
+        "quantity": 120,
+        "unit": "packet",
+        "unit_cost": 27,
+        "tax_amount": 0,
+        "line_total": 3240
+      },
+      {
+        "product_id": "SKU-SALT-1K",
+        "raw_description": "TATA SALT 1KGS",
+        "quantity": 280,
+        "unit": "packet",
+        "unit_cost": 22,
+        "tax_amount": 0,
+        "line_total": 6160
+      },
+      {
+        "product_id": "SKU-MUST-1L",
+        "raw_description": "FORTUNE KACHI GHANI 1L",
+        "quantity": 170,
+        "unit": "bottle",
+        "unit_cost": 137,
+        "tax_amount": 0,
+        "line_total": 23290
+      },
+      {
+        "product_id": "SKU-HALDI-100",
+        "raw_description": "HALDI PWD 100G",
+        "quantity": 90,
+        "unit": "packet",
+        "unit_cost": 23,
+        "tax_amount": 0,
+        "line_total": 2070
+      },
+      {
+        "product_id": "SKU-MOONG-1K",
+        "raw_description": "MOONG DAL YELLOW 1 KGS",
+        "quantity": 130,
+        "unit": "packet",
+        "unit_cost": 105,
+        "tax_amount": 0,
+        "line_total": 13650
+      },
+      {
+        "product_id": "SKU-GHEE-1L",
+        "raw_description": "AMUL GHEE TIN 1LTR",
+        "quantity": 50,
+        "unit": "tin",
+        "unit_cost": 547,
+        "tax_amount": 0,
+        "line_total": 27350
+      },
+      {
+        "product_id": "SKU-OIL-1L",
+        "raw_description": "SUNPURE OIL 1 LITRE",
+        "quantity": 440,
+        "unit": "bottle",
+        "unit_cost": 131,
+        "tax_amount": 0,
+        "line_total": 57640
+      }
+    ],
+    "supplier_key": "SHAKTI"
+  },
+  {
+    "supplier_name": "Shakti Wholesale",
+    "invoice_number": "SW-813",
+    "invoice_date": "2026-06-25",
+    "currency": "INR",
+    "invoice_total": 347240,
+    "line_items": [
+      {
+        "product_id": "SKU-SUG-1K",
+        "raw_description": "SUGAR M30 1KG",
+        "quantity": 710,
+        "unit": "packet",
+        "unit_cost": 45,
+        "tax_amount": 0,
+        "line_total": 31950
+      },
+      {
+        "product_id": "SKU-BESAN-500",
+        "raw_description": "BESAN 500 GM",
+        "quantity": 210,
+        "unit": "packet",
+        "unit_cost": 50,
+        "tax_amount": 0,
+        "line_total": 10500
+      },
+      {
+        "product_id": "SKU-MIRCH-100",
+        "raw_description": "LAL MIRCH PWD 100G",
+        "quantity": 150,
+        "unit": "packet",
+        "unit_cost": 27,
+        "tax_amount": 0,
+        "line_total": 4050
+      },
+      {
+        "product_id": "SKU-TEA-250",
+        "raw_description": "TATA TEA GOLD 250GM",
+        "quantity": 270,
+        "unit": "packet",
+        "unit_cost": 152,
+        "tax_amount": 0,
+        "line_total": 41040
+      },
+      {
+        "product_id": "SKU-TOOR-1K",
+        "raw_description": "TOOR DAL PREMIUM 1KG",
+        "quantity": 280,
+        "unit": "packet",
+        "unit_cost": 131,
+        "tax_amount": 0,
+        "line_total": 36680
+      },
+      {
+        "product_id": "SKU-POHA-500",
+        "raw_description": "POHA THICK 500 GM",
+        "quantity": 210,
+        "unit": "packet",
+        "unit_cost": 27,
+        "tax_amount": 0,
+        "line_total": 5670
+      },
+      {
+        "product_id": "SKU-SALT-1K",
+        "raw_description": "TATA SALT 1KGS",
+        "quantity": 480,
+        "unit": "packet",
+        "unit_cost": 22,
+        "tax_amount": 0,
+        "line_total": 10560
+      },
+      {
+        "product_id": "SKU-MUST-1L",
+        "raw_description": "FORTUNE KACHI GHANI 1L",
+        "quantity": 280,
+        "unit": "bottle",
+        "unit_cost": 137,
+        "tax_amount": 0,
+        "line_total": 38360
+      },
+      {
+        "product_id": "SKU-HALDI-100",
+        "raw_description": "HALDI PWD 100G",
+        "quantity": 140,
+        "unit": "packet",
+        "unit_cost": 23,
+        "tax_amount": 0,
+        "line_total": 3220
+      },
+      {
+        "product_id": "SKU-MOONG-1K",
+        "raw_description": "MOONG DAL YELLOW 1 KGS",
+        "quantity": 210,
+        "unit": "packet",
+        "unit_cost": 105,
+        "tax_amount": 0,
+        "line_total": 22050
+      },
+      {
+        "product_id": "SKU-GHEE-1L",
+        "raw_description": "AMUL GHEE TIN 1LTR",
+        "quantity": 80,
+        "unit": "tin",
+        "unit_cost": 547,
+        "tax_amount": 0,
+        "line_total": 43760
+      },
+      {
+        "product_id": "SKU-OIL-1L",
+        "raw_description": "SUNPURE OIL 1 LITRE",
+        "quantity": 710,
+        "unit": "bottle",
+        "unit_cost": 140,
+        "tax_amount": 0,
+        "line_total": 99400
+      }
+    ],
+    "supplier_key": "SHAKTI"
+  },
+  {
+    "supplier_name": "Shakti Wholesale",
+    "invoice_number": "SW-839",
+    "invoice_date": "2026-08-27",
+    "currency": "INR",
+    "invoice_total": 156040,
+    "line_items": [
+      {
+        "product_id": "SKU-SUG-1K",
+        "raw_description": "SUGAR M30 1KG",
+        "quantity": 310,
+        "unit": "packet",
+        "unit_cost": 48,
+        "tax_amount": 0,
+        "line_total": 14880
+      },
+      {
+        "product_id": "SKU-BESAN-500",
+        "raw_description": "BESAN 500 GM",
+        "quantity": 90,
+        "unit": "packet",
+        "unit_cost": 50,
+        "tax_amount": 0,
+        "line_total": 4500
+      },
+      {
+        "product_id": "SKU-MIRCH-100",
+        "raw_description": "LAL MIRCH PWD 100G",
+        "quantity": 70,
+        "unit": "packet",
+        "unit_cost": 28,
+        "tax_amount": 0,
+        "line_total": 1960
+      },
+      {
+        "product_id": "SKU-TEA-250",
+        "raw_description": "TATA TEA GOLD 250GM",
+        "quantity": 120,
+        "unit": "packet",
+        "unit_cost": 152,
+        "tax_amount": 0,
+        "line_total": 18240
+      },
+      {
+        "product_id": "SKU-TOOR-1K",
+        "raw_description": "TOOR DAL PREMIUM 1KG",
+        "quantity": 130,
+        "unit": "packet",
+        "unit_cost": 131,
+        "tax_amount": 0,
+        "line_total": 17030
+      },
+      {
+        "product_id": "SKU-POHA-500",
+        "raw_description": "POHA THICK 500 GM",
+        "quantity": 90,
+        "unit": "packet",
+        "unit_cost": 27,
+        "tax_amount": 0,
+        "line_total": 2430
+      },
+      {
+        "product_id": "SKU-SALT-1K",
+        "raw_description": "TATA SALT 1KGS",
+        "quantity": 220,
+        "unit": "packet",
+        "unit_cost": 22,
+        "tax_amount": 0,
+        "line_total": 4840
+      },
+      {
+        "product_id": "SKU-MUST-1L",
+        "raw_description": "FORTUNE KACHI GHANI 1L",
+        "quantity": 120,
+        "unit": "bottle",
+        "unit_cost": 141,
+        "tax_amount": 0,
+        "line_total": 16920
+      },
+      {
+        "product_id": "SKU-HALDI-100",
+        "raw_description": "HALDI PWD 100G",
+        "quantity": 60,
+        "unit": "packet",
+        "unit_cost": 23,
+        "tax_amount": 0,
+        "line_total": 1380
+      },
+      {
+        "product_id": "SKU-MOONG-1K",
+        "raw_description": "MOONG DAL YELLOW 1 KGS",
+        "quantity": 100,
+        "unit": "packet",
+        "unit_cost": 108,
+        "tax_amount": 0,
+        "line_total": 10800
+      },
+      {
+        "product_id": "SKU-GHEE-1L",
+        "raw_description": "AMUL GHEE TIN 1LTR",
+        "quantity": 30,
+        "unit": "tin",
+        "unit_cost": 552,
+        "tax_amount": 0,
+        "line_total": 16560
+      },
+      {
+        "product_id": "SKU-OIL-1L",
+        "raw_description": "SUNPURE OIL 1 LITRE",
+        "quantity": 310,
+        "unit": "bottle",
+        "unit_cost": 150,
+        "tax_amount": 0,
+        "line_total": 46500
+      }
+    ],
+    "supplier_key": "SHAKTI"
+  },
+  {
+    "supplier_name": "Awadh Grain Traders",
+    "invoice_number": "AGT-397",
+    "invoice_date": "2026-05-19",
+    "currency": "INR",
+    "invoice_total": 102720,
+    "line_items": [
+      {
+        "product_id": "SKU-ATTA-5K",
+        "raw_description": "AASHIRVAAD ATTA 5KG BAG",
+        "quantity": 310,
+        "unit": "bag",
+        "unit_cost": 226,
+        "tax_amount": 0,
+        "line_total": 70060
+      },
+      {
+        "product_id": "SKU-SUJI-500",
+        "raw_description": "SOOJI RAVA 500 G",
+        "quantity": 90,
+        "unit": "packet",
+        "unit_cost": 24,
+        "tax_amount": 0,
+        "line_total": 2160
+      },
+      {
+        "product_id": "SKU-CHANA-1K",
+        "raw_description": "KABULI CHANA 1KGS",
+        "quantity": 100,
+        "unit": "packet",
+        "unit_cost": 120,
+        "tax_amount": 0,
+        "line_total": 12000
+      },
+      {
+        "product_id": "SKU-RAJMA-1K",
+        "raw_description": "RAJMA CHITRA 1KGS",
+        "quantity": 90,
+        "unit": "packet",
+        "unit_cost": 140,
+        "tax_amount": 0,
+        "line_total": 12600
+      },
+      {
+        "product_id": "SKU-MAIDA-1K",
+        "raw_description": "MAIDA 1 KG",
+        "quantity": 130,
+        "unit": "packet",
+        "unit_cost": 35,
+        "tax_amount": 0,
+        "line_total": 4550
+      },
+      {
+        "product_id": "SKU-DALIA-500",
+        "raw_description": "DALIA 500GM",
+        "quantity": 50,
+        "unit": "packet",
+        "unit_cost": 27,
+        "tax_amount": 0,
+        "line_total": 1350
+      }
+    ],
+    "supplier_key": "AWADH"
+  },
+  {
+    "supplier_name": "Awadh Grain Traders",
+    "invoice_number": "AGT-417",
+    "invoice_date": "2026-06-26",
+    "currency": "INR",
+    "invoice_total": 171770,
+    "line_items": [
+      {
+        "product_id": "SKU-ATTA-5K",
+        "raw_description": "AASHIRVAAD ATTA 5KG BAG",
+        "quantity": 520,
+        "unit": "bag",
+        "unit_cost": 226,
+        "tax_amount": 0,
+        "line_total": 117520
+      },
+      {
+        "product_id": "SKU-SUJI-500",
+        "raw_description": "SOOJI RAVA 500 G",
+        "quantity": 160,
+        "unit": "packet",
+        "unit_cost": 24,
+        "tax_amount": 0,
+        "line_total": 3840
+      },
+      {
+        "product_id": "SKU-CHANA-1K",
+        "raw_description": "KABULI CHANA 1KGS",
+        "quantity": 160,
+        "unit": "packet",
+        "unit_cost": 120,
+        "tax_amount": 0,
+        "line_total": 19200
+      },
+      {
+        "product_id": "SKU-RAJMA-1K",
+        "raw_description": "RAJMA CHITRA 1KGS",
+        "quantity": 150,
+        "unit": "packet",
+        "unit_cost": 140,
+        "tax_amount": 0,
+        "line_total": 21000
+      },
+      {
+        "product_id": "SKU-MAIDA-1K",
+        "raw_description": "MAIDA 1 KG",
+        "quantity": 230,
+        "unit": "packet",
+        "unit_cost": 35,
+        "tax_amount": 0,
+        "line_total": 8050
+      },
+      {
+        "product_id": "SKU-DALIA-500",
+        "raw_description": "DALIA 500GM",
+        "quantity": 80,
+        "unit": "packet",
+        "unit_cost": 27,
+        "tax_amount": 0,
+        "line_total": 2160
+      }
+    ],
+    "supplier_key": "AWADH"
+  },
+  {
+    "supplier_name": "Awadh Grain Traders",
+    "invoice_number": "AGT-437",
+    "invoice_date": "2026-09-01",
+    "currency": "INR",
+    "invoice_total": 59310,
+    "line_items": [
+      {
+        "product_id": "SKU-ATTA-5K",
+        "raw_description": "AASHIRVAAD ATTA 5KG BAG",
+        "quantity": 180,
+        "unit": "bag",
+        "unit_cost": 228,
+        "tax_amount": 0,
+        "line_total": 41040
+      },
+      {
+        "product_id": "SKU-SUJI-500",
+        "raw_description": "SOOJI RAVA 500 G",
+        "quantity": 60,
+        "unit": "packet",
+        "unit_cost": 25,
+        "tax_amount": 0,
+        "line_total": 1500
+      },
+      {
+        "product_id": "SKU-CHANA-1K",
+        "raw_description": "KABULI CHANA 1KGS",
+        "quantity": 50,
+        "unit": "packet",
+        "unit_cost": 120,
+        "tax_amount": 0,
+        "line_total": 6000
+      },
+      {
+        "product_id": "SKU-RAJMA-1K",
+        "raw_description": "RAJMA CHITRA 1KGS",
+        "quantity": 50,
+        "unit": "packet",
+        "unit_cost": 141,
+        "tax_amount": 0,
+        "line_total": 7050
+      },
+      {
+        "product_id": "SKU-MAIDA-1K",
+        "raw_description": "MAIDA 1 KG",
+        "quantity": 80,
+        "unit": "packet",
+        "unit_cost": 36,
+        "tax_amount": 0,
+        "line_total": 2880
+      },
+      {
+        "product_id": "SKU-DALIA-500",
+        "raw_description": "DALIA 500GM",
+        "quantity": 30,
+        "unit": "packet",
+        "unit_cost": 28,
+        "tax_amount": 0,
+        "line_total": 840
+      }
+    ],
+    "supplier_key": "AWADH"
+  },
+  {
+    "supplier_name": "Metro FMCG Distributors",
+    "invoice_number": "MFD-716",
+    "invoice_date": "2026-05-19",
+    "currency": "INR",
+    "invoice_total": 59400,
+    "line_items": [
+      {
+        "product_id": "SKU-LIFEBUOY-4",
+        "raw_description": "LIFEBUOY 4X100G",
+        "quantity": 50,
+        "unit": "pack",
+        "unit_cost": 112,
+        "tax_amount": 0,
+        "line_total": 5600
+      },
+      {
+        "product_id": "SKU-COKE-750",
+        "raw_description": "COCA COLA PET 750 ML",
+        "quantity": 290,
+        "unit": "bottle",
+        "unit_cost": 37,
+        "tax_amount": 0,
+        "line_total": 10730
+      },
+      {
+        "product_id": "SKU-WATER-1L",
+        "raw_description": "BISLERI 1 LTR",
+        "quantity": 460,
+        "unit": "bottle",
+        "unit_cost": 17,
+        "tax_amount": 0,
+        "line_total": 7820
+      },
+      {
+        "product_id": "SKU-BREAD-400",
+        "raw_description": "BREAD BROWN 400G",
+        "quantity": 170,
+        "unit": "packet",
+        "unit_cost": 39,
+        "tax_amount": 0,
+        "line_total": 6630
+      },
+      {
+        "product_id": "SKU-FROOTI-600",
+        "raw_description": "FROOTI MANGO 600 ML",
+        "quantity": 190,
+        "unit": "bottle",
+        "unit_cost": 28,
+        "tax_amount": 0,
+        "line_total": 5320
+      },
+      {
+        "product_id": "SKU-HARPIC-500",
+        "raw_description": "HARPIC POWER PLUS 500ML",
+        "quantity": 40,
+        "unit": "bottle",
+        "unit_cost": 91,
+        "tax_amount": 0,
+        "line_total": 3640
+      },
+      {
+        "product_id": "SKU-VIM-500",
+        "raw_description": "VIM BAR 500G",
+        "quantity": 150,
+        "unit": "packet",
+        "unit_cost": 34,
+        "tax_amount": 0,
+        "line_total": 5100
+      },
+      {
+        "product_id": "SKU-SPRITE-750",
+        "raw_description": "SPRITE PET 750ML",
+        "quantity": 160,
+        "unit": "bottle",
+        "unit_cost": 36,
+        "tax_amount": 0,
+        "line_total": 5760
+      },
+      {
+        "product_id": "SKU-SURF-1K",
+        "raw_description": "SURF EXCEL EASY WASH 1KG",
+        "quantity": 80,
+        "unit": "packet",
+        "unit_cost": 110,
+        "tax_amount": 0,
+        "line_total": 8800
+      }
+    ],
+    "supplier_key": "METRO"
+  },
+  {
+    "supplier_name": "Metro FMCG Distributors",
+    "invoice_number": "MFD-744",
+    "invoice_date": "2026-06-22",
+    "currency": "INR",
+    "invoice_total": 124240,
+    "line_items": [
+      {
+        "product_id": "SKU-LIFEBUOY-4",
+        "raw_description": "LIFEBUOY 4X100G",
+        "quantity": 80,
+        "unit": "pack",
+        "unit_cost": 112,
+        "tax_amount": 0,
+        "line_total": 8960
+      },
+      {
+        "product_id": "SKU-COKE-750",
+        "raw_description": "COCA COLA PET 750 ML",
+        "quantity": 680,
+        "unit": "bottle",
+        "unit_cost": 37,
+        "tax_amount": 0,
+        "line_total": 25160
+      },
+      {
+        "product_id": "SKU-WATER-1L",
+        "raw_description": "BISLERI 1 LTR",
+        "quantity": 1060,
+        "unit": "bottle",
+        "unit_cost": 17,
+        "tax_amount": 0,
+        "line_total": 18020
+      },
+      {
+        "product_id": "SKU-BREAD-400",
+        "raw_description": "BREAD BROWN 400G",
+        "quantity": 300,
+        "unit": "packet",
+        "unit_cost": 39,
+        "tax_amount": 0,
+        "line_total": 11700
+      },
+      {
+        "product_id": "SKU-FROOTI-600",
+        "raw_description": "FROOTI MANGO 600 ML",
+        "quantity": 480,
+        "unit": "bottle",
+        "unit_cost": 28,
+        "tax_amount": 0,
+        "line_total": 13440
+      },
+      {
+        "product_id": "SKU-HARPIC-500",
+        "raw_description": "HARPIC POWER PLUS 500ML",
+        "quantity": 80,
+        "unit": "bottle",
+        "unit_cost": 91,
+        "tax_amount": 0,
+        "line_total": 7280
+      },
+      {
+        "product_id": "SKU-VIM-500",
+        "raw_description": "VIM BAR 500G",
+        "quantity": 290,
+        "unit": "packet",
+        "unit_cost": 34,
+        "tax_amount": 0,
+        "line_total": 9860
+      },
+      {
+        "product_id": "SKU-SPRITE-750",
+        "raw_description": "SPRITE PET 750ML",
+        "quantity": 370,
+        "unit": "bottle",
+        "unit_cost": 36,
+        "tax_amount": 0,
+        "line_total": 13320
+      },
+      {
+        "product_id": "SKU-SURF-1K",
+        "raw_description": "SURF EXCEL EASY WASH 1KG",
+        "quantity": 150,
+        "unit": "packet",
+        "unit_cost": 110,
+        "tax_amount": 0,
+        "line_total": 16500
+      }
+    ],
+    "supplier_key": "METRO"
+  },
+  {
+    "supplier_name": "Metro FMCG Distributors",
+    "invoice_number": "MFD-780",
+    "invoice_date": "2026-08-30",
+    "currency": "INR",
+    "invoice_total": 42390,
+    "line_items": [
+      {
+        "product_id": "SKU-LIFEBUOY-4",
+        "raw_description": "LIFEBUOY 4X100G",
+        "quantity": 30,
+        "unit": "pack",
+        "unit_cost": 113,
+        "tax_amount": 0,
+        "line_total": 3390
+      },
+      {
+        "product_id": "SKU-COKE-750",
+        "raw_description": "COCA COLA PET 750 ML",
+        "quantity": 200,
+        "unit": "bottle",
+        "unit_cost": 37,
+        "tax_amount": 0,
+        "line_total": 7400
+      },
+      {
+        "product_id": "SKU-WATER-1L",
+        "raw_description": "BISLERI 1 LTR",
+        "quantity": 270,
+        "unit": "bottle",
+        "unit_cost": 18,
+        "tax_amount": 0,
+        "line_total": 4860
+      },
+      {
+        "product_id": "SKU-BREAD-400",
+        "raw_description": "BREAD BROWN 400G",
+        "quantity": 120,
+        "unit": "packet",
+        "unit_cost": 40,
+        "tax_amount": 0,
+        "line_total": 4800
+      },
+      {
+        "product_id": "SKU-FROOTI-600",
+        "raw_description": "FROOTI MANGO 600 ML",
+        "quantity": 140,
+        "unit": "bottle",
+        "unit_cost": 28,
+        "tax_amount": 0,
+        "line_total": 3920
+      },
+      {
+        "product_id": "SKU-HARPIC-500",
+        "raw_description": "HARPIC POWER PLUS 500ML",
+        "quantity": 40,
+        "unit": "bottle",
+        "unit_cost": 93,
+        "tax_amount": 0,
+        "line_total": 3720
+      },
+      {
+        "product_id": "SKU-VIM-500",
+        "raw_description": "VIM BAR 500G",
+        "quantity": 110,
+        "unit": "packet",
+        "unit_cost": 34,
+        "tax_amount": 0,
+        "line_total": 3740
+      },
+      {
+        "product_id": "SKU-SPRITE-750",
+        "raw_description": "SPRITE PET 750ML",
+        "quantity": 110,
+        "unit": "bottle",
+        "unit_cost": 36,
+        "tax_amount": 0,
+        "line_total": 3960
+      },
+      {
+        "product_id": "SKU-SURF-1K",
+        "raw_description": "SURF EXCEL EASY WASH 1KG",
+        "quantity": 60,
+        "unit": "packet",
+        "unit_cost": 110,
+        "tax_amount": 0,
+        "line_total": 6600
+      }
+    ],
+    "supplier_key": "METRO"
+  },
+  {
+    "supplier_name": "Metro FMCG Distributors",
+    "invoice_number": "MFD-928B",
+    "invoice_date": "2026-07-03",
+    "currency": "INR",
+    "invoice_total": 3640,
+    "line_items": [
+      {
+        "product_id": "SKU-HARPIC-500",
+        "raw_description": "HARPIC POWER PLUS 500ML (BULK ORDER)",
+        "quantity": 40,
+        "unit": "bottle",
+        "unit_cost": 91,
+        "tax_amount": 0,
+        "line_total": 3640
+      }
+    ],
+    "supplier_key": "METRO"
+  }
+]

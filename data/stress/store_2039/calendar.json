@@ -1,0 +1,20 @@
+{
+  "store": "Tiwari Kirana Store, Alambagh",
+  "promotions": [
+    {
+      "product_id": "SKU-ATTA-5K",
+      "start": "2026-06-14",
+      "end": "2026-06-18",
+      "price": 210,
+      "label": "Weekend offer"
+    }
+  ],
+  "festivals": [
+    {
+      "name": "Local mela week",
+      "start": "2026-07-12",
+      "end": "2026-07-22",
+      "affects": "beverages"
+    }
+  ]
+}

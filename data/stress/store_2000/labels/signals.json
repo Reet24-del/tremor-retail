@@ -1,0 +1,65 @@
+{
+  "dataset_version": "stress-seed-2000",
+  "planted_signals": [
+    {
+      "id": "M1",
+      "signal_type": "margin_leakage",
+      "product_id": "SKU-OIL-1L",
+      "expected_severity": null,
+      "facts": {
+        "cost_path": [
+          131,
+          140,
+          150
+        ],
+        "selling_price": 158
+      }
+    },
+    {
+      "id": "M2",
+      "signal_type": "margin_leakage",
+      "product_id": "SKU-SUG-1K",
+      "expected_severity": null,
+      "facts": {
+        "cost_path": [
+          42,
+          45,
+          48
+        ],
+        "selling_price": 49
+      }
+    },
+    {
+      "id": "S1",
+      "signal_type": "inventory_discrepancy",
+      "product_id": "SKU-POHA-500",
+      "expected_severity": null,
+      "facts": {
+        "stock_variance_units": -14
+      }
+    }
+  ],
+  "decoys": [
+    {
+      "id": "D1",
+      "candidate_type": "sales_spike",
+      "product_ids": [
+        "SKU-COKE-750",
+        "SKU-FROOTI-600",
+        "SKU-SPRITE-750",
+        "SKU-WATER-1L"
+      ],
+      "expected": "rejected",
+      "reason": "Festival demand"
+    },
+    {
+      "id": "D2",
+      "candidate_type": "purchase_spike",
+      "product_ids": [
+        "SKU-HARPIC-500"
+      ],
+      "expected": "rejected",
+      "reason": "Off-cycle bulk purchase that reconciles"
+    }
+  ]
+}

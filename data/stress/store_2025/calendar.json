@@ -1,0 +1,20 @@
+{
+  "store": "Tiwari Kirana Store, Gomti Nagar",
+  "promotions": [
+    {
+      "product_id": "SKU-PARLE-G",
+      "start": "2026-05-17",
+      "end": "2026-05-21",
+      "price": 22,
+      "label": "Weekend offer"
+    }
+  ],
+  "festivals": [
+    {
+      "name": "Local mela week",
+      "start": "2026-06-15",
+      "end": "2026-06-25",
+      "affects": "beverages"
+    }
+  ]
+}

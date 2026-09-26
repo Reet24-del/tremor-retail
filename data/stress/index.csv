@@ -1,0 +1,51 @@
+seed,store,days,products,invoices,planted,found,published,recall_pct,precision_pct,decoys_rejected
+2000,"Agarwal Kirana Store, Aliganj",120,27,10,3,3,3,100.0,100.0,2/2
+2001,"Srivastava Kirana Store, Aliganj",105,26,10,4,4,4,100.0,100.0,2/2
+2002,"Sharma Kirana Store, Mahanagar",75,30,10,4,4,4,100.0,100.0,2/2
+2003,"Verma Kirana Store, Chowk",105,32,10,4,4,4,100.0,100.0,2/2
+2004,"Tiwari Kirana Store, Aliganj",90,22,10,4,4,4,100.0,100.0,2/2
+2005,"Agarwal Kirana Store, Aliganj",75,23,10,4,4,4,100.0,100.0,2/2
+2006,"Tiwari Kirana Store, Alambagh",75,28,10,4,4,4,100.0,100.0,2/2
+2007,"Yadav Kirana Store, Gomti Nagar",120,28,10,3,3,3,100.0,100.0,2/2
+2008,"Gupta Kirana Store, Alambagh",75,30,10,3,3,3,100.0,100.0,2/2
+2009,"Mishra Kirana Store, Hazratganj",120,31,10,6,6,6,100.0,100.0,2/2
+2010,"Gupta Kirana Store, Vikas Nagar",120,32,10,5,5,5,100.0,100.0,2/2
+2011,"Tiwari Kirana Store, Chowk",105,29,10,5,5,5,100.0,100.0,2/2
+2012,"Verma Kirana Store, Vikas Nagar",105,26,10,5,5,5,100.0,100.0,2/2
+2013,"Singh Kirana Store, Aliganj",120,29,10,4,4,4,100.0,100.0,2/2
+2014,"Khan Kirana Store, Alambagh",90,30,10,4,4,4,100.0,100.0,2/2
+2015,"Verma Kirana Store, Aliganj",90,26,10,5,5,5,100.0,100.0,2/2
+2016,"Agarwal Kirana Store, Rajajipuram",75,28,10,5,5,5,100.0,100.0,2/2
+2017,"Yadav Kirana Store, Vikas Nagar",105,32,10,6,6,6,100.0,100.0,2/2
+2018,"Tiwari Kirana Store, Hazratganj",75,30,10,3,3,4,100.0,75.0,1/2
+2019,"Gupta Kirana Store, Chowk",120,27,10,4,4,4,100.0,100.0,2/2
+2020,"Srivastava Kirana Store, Hazratganj",120,29,10,5,5,5,100.0,100.0,2/2
+2021,"Singh Kirana Store, Rajajipuram",90,28,10,4,4,4,100.0,100.0,2/2
+2022,"Tiwari Kirana Store, Rajajipuram",120,26,10,5,5,5,100.0,100.0,2/2
+2023,"Singh Kirana Store, Vikas Nagar",120,26,10,4,4,4,100.0,100.0,2/2
+2024,"Agarwal Kirana Store, Hazratganj",105,27,10,5,5,5,100.0,100.0,1/2
+2025,"Tiwari Kirana Store, Gomti Nagar",120,29,10,4,3,3,75.0,100.0,2/2
+2026,"Verma Kirana Store, Mahanagar",75,30,10,3,3,3,100.0,100.0,2/2
+2027,"Verma Kirana Store, Vikas Nagar",75,29,10,4,4,4,100.0,100.0,2/2
+2028,"Khan Kirana Store, Hazratganj",75,27,10,4,4,4,100.0,100.0,2/2
+2029,"Agarwal Kirana Store, Vikas Nagar",90,28,10,3,3,3,100.0,100.0,2/2
+2030,"Mishra Kirana Store, Alambagh",105,25,10,3,3,3,100.0,100.0,1/2
+2031,"Gupta Kirana Store, Mahanagar",105,28,10,4,4,4,100.0,100.0,2/2
+2032,"Sharma Kirana Store, Vikas Nagar",75,30,10,3,3,3,100.0,100.0,1/2
+2033,"Singh Kirana Store, Hazratganj",75,31,10,3,3,3,100.0,100.0,2/2
+2034,"Verma Kirana Store, Mahanagar",105,31,10,3,3,3,100.0,100.0,2/2
+2035,"Mishra Kirana Store, Hazratganj",75,32,10,4,4,4,100.0,100.0,2/2
+2036,"Sharma Kirana Store, Alambagh",75,29,10,6,6,6,100.0,100.0,2/2
+2037,"Mishra Kirana Store, Aliganj",105,27,10,4,4,4,100.0,100.0,2/2
+2038,"Verma Kirana Store, Vikas Nagar",75,29,10,4,4,4,100.0,100.0,2/2
+2039,"Tiwari Kirana Store, Alambagh",75,25,10,5,5,6,100.0,83.3,2/2
+2040,"Singh Kirana Store, Mahanagar",120,31,10,4,4,4,100.0,100.0,2/2
+2041,"Sharma Kirana Store, Vikas Nagar",105,27,10,3,3,4,100.0,75.0,2/2
+2042,"Khan Kirana Store, Chowk",90,24,10,4,4,5,100.0,80.0,2/2
+2043,"Agarwal Kirana Store, Chowk",120,31,10,3,3,3,100.0,100.0,2/2
+2044,"Verma Kirana Store, Mahanagar",75,33,10,4,2,2,50.0,100.0,2/2
+2045,"Gupta Kirana Store, Alambagh",75,29,10,4,4,4,100.0,100.0,2/2
+2046,"Tiwari Kirana Store, Alambagh",105,27,10,4,4,4,100.0,100.0,2/2
+2047,"Yadav Kirana Store, Vikas Nagar",90,22,10,3,3,3,100.0,100.0,2/2
+2048,"Mishra Kirana Store, Vikas Nagar",120,31,10,4,4,4,100.0,100.0,2/2
+2049,"Tiwari Kirana Store, Rajajipuram",75,27,10,3,3,3,100.0,100.0,1/2

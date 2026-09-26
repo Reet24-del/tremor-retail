@@ -1,0 +1,166 @@
+{
+  "source_file": "MFD-3301.pdf",
+  "supplier_name": "Metro FMCG Distributors",
+  "invoice_number": "MFD-3301",
+  "invoice_date": "2026-06-30",
+  "currency": "INR",
+  "invoice_total": 104580,
+  "extraction_method": "cached",
+  "line_items": [
+    {
+      "line_id": "line_01",
+      "raw_description": "COCA COLA PET 750ML",
+      "quantity": 250,
+      "unit": "bottle",
+      "unit_cost": 34,
+      "tax_amount": 0,
+      "line_total": 8500,
+      "page_number": 1,
+      "extraction_confidence": 0.99
+    },
+    {
+      "line_id": "line_02",
+      "raw_description": "FROOTI MANGO 600ML",
+      "quantity": 200,
+      "unit": "bottle",
+      "unit_cost": 28,
+      "tax_amount": 0,
+      "line_total": 5600,
+      "page_number": 1,
+      "extraction_confidence": 0.99
+    },
+    {
+      "line_id": "line_03",
+      "raw_description": "SPRITE PET 750ML",
+      "quantity": 170,
+      "unit": "bottle",
+      "unit_cost": 34,
+      "tax_amount": 0,
+      "line_total": 5780,
+      "page_number": 1,
+      "extraction_confidence": 0.99
+    },
+    {
+      "line_id": "line_04",
+      "raw_description": "BISLERI 1LTR",
+      "quantity": 510,
+      "unit": "bottle",
+      "unit_cost": 15,
+      "tax_amount": 0,
+      "line_total": 7650,
+      "page_number": 1,
+      "extraction_confidence": 0.99
+    },
+    {
+      "line_id": "line_05",
+      "raw_description": "PARLE G 250G",
+      "quantity": 420,
+      "unit": "packet",
+      "unit_cost": 20,
+      "tax_amount": 0,
+      "line_total": 8400,
+      "page_number": 1,
+      "extraction_confidence": 0.99
+    },
+    {
+      "line_id": "line_06",
+      "raw_description": "MAGGI 4 PACK 280G",
+      "quantity": 240,
+      "unit": "packet",
+      "unit_cost": 48,
+      "tax_amount": 0,
+      "line_total": 11520,
+      "page_number": 1,
+      "extraction_confidence": 0.99
+    },
+    {
+      "line_id": "line_07",
+      "raw_description": "LAYS CLASSIC SALTED 52G",
+      "quantity": 270,
+      "unit": "packet",
+      "unit_cost": 17,
+      "tax_amount": 0,
+      "line_total": 4590,
+      "page_number": 1,
+      "extraction_confidence": 0.99
+    },
+    {
+      "line_id": "line_08",
+      "raw_description": "BREAD BROWN 400G",
+      "quantity": 210,
+      "unit": "packet",
+      "unit_cost": 38,
+      "tax_amount": 0,
+      "line_total": 7980,
+      "page_number": 1,
+      "extraction_confidence": 0.99
+    },
+    {
+      "line_id": "line_09",
+      "raw_description": "SURF EXCEL EASY WASH 1KG",
+      "quantity": 80,
+      "unit": "packet",
+      "unit_cost": 118,
+      "tax_amount": 0,
+      "line_total": 9440,
+      "page_number": 1,
+      "extraction_confidence": 0.99
+    },
+    {
+      "line_id": "line_10",
+      "raw_description": "VIM BAR 500G",
+      "quantity": 130,
+      "unit": "packet",
+      "unit_cost": 36,
+      "tax_amount": 0,
+      "line_total": 4680,
+      "page_number": 1,
+      "extraction_confidence": 0.99
+    },
+    {
+      "line_id": "line_11",
+      "raw_description": "COLGATE STRONG TEETH 200G",
+      "quantity": 80,
+      "unit": "tube",
+      "unit_cost": 96,
+      "tax_amount": 0,
+      "line_total": 7680,
+      "page_number": 1,
+      "extraction_confidence": 0.99
+    },
+    {
+      "line_id": "line_12",
+      "raw_description": "LIFEBUOY 4X100G",
+      "quantity": 90,
+      "unit": "pack",
+      "unit_cost": 112,
+      "tax_amount": 0,
+      "line_total": 10080,
+      "page_number": 1,
+      "extraction_confidence": 0.99
+    },
+    {
+      "line_id": "line_13",
+      "raw_description": "DETTOL ANTISEPTIC 250ML",
+      "quantity": 50,
+      "unit": "bottle",
+      "unit_cost": 148,
+      "tax_amount": 0,
+      "line_total": 7400,
+      "page_number": 1,
+      "extraction_confidence": 0.99
+    },
+    {
+      "line_id": "line_14",
+      "raw_description": "HARPIC POWER PLUS 500ML",
+      "quantity": 60,
+      "unit": "bottle",
+      "unit_cost": 88,
+      "tax_amount": 0,
+      "line_total": 5280,
+      "page_number": 1,
+      "extraction_confidence": 0.99
+    }
+  ],
+  "extraction_warnings": []
+}

@@ -1,0 +1,89 @@
+{
+  "dataset_version": "demo-fixture-v1",
+  "planted_signals": [
+    {
+      "id": "S1",
+      "signal_type": "margin_leakage",
+      "product_id": "SKU-OIL-1L",
+      "expected_severity": "high",
+      "facts": {
+        "prior_unit_cost": 118,
+        "latest_unit_cost": 132,
+        "selling_price": 135,
+        "prior_margin_percent": 12.6,
+        "current_margin_percent": 2.2,
+        "units_sold_after_cost_change": 120,
+        "estimated_margin_leakage": 1680,
+        "stock_variance_units": -12
+      }
+    },
+    {
+      "id": "S2",
+      "signal_type": "margin_leakage",
+      "product_id": "SKU-ATTA-5K",
+      "expected_severity": "medium",
+      "facts": {
+        "cost_path": [
+          210,
+          222,
+          236
+        ],
+        "price_change": "260 to 270 from 2026-09-18"
+      }
+    },
+    {
+      "id": "S3",
+      "signal_type": "inventory_discrepancy",
+      "product_id": "SKU-RICE-1K",
+      "expected_severity": "medium",
+      "facts": {
+        "stock_variance_units": -20
+      }
+    },
+    {
+      "id": "S4",
+      "signal_type": "margin_leakage",
+      "product_id": "SKU-SUG-1K",
+      "expected_severity": "high",
+      "facts": {
+        "prior_unit_cost": 42,
+        "latest_unit_cost": 47,
+        "selling_price": 48
+      }
+    },
+    {
+      "id": "S5",
+      "signal_type": "margin_leakage",
+      "product_id": "SKU-TOOR-1K",
+      "expected_severity": "medium",
+      "facts": {
+        "prior_unit_cost": 128,
+        "latest_unit_cost": 141,
+        "selling_price": 150
+      }
+    }
+  ],
+  "decoys": [
+    {
+      "id": "D1",
+      "candidate_type": "sales_spike",
+      "product_ids": [
+        "SKU-COKE-750",
+        "SKU-FROOTI-600",
+        "SKU-SPRITE-750",
+        "SKU-WATER-1L"
+      ],
+      "expected": "rejected",
+      "reason": "Beverage sales rise inside the labelled festival period"
+    },
+    {
+      "id": "D2",
+      "candidate_type": "purchase_spike",
+      "product_ids": [
+        "SKU-BAS-5K"
+      ],
+      "expected": "rejected",
+      "reason": "One-time bulk purchase; sales and stock reconcile"
+    }
+  ]
+}

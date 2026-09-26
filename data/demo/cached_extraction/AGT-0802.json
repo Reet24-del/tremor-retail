@@ -1,0 +1,100 @@
+{
+  "source_file": "AGT-0802.pdf",
+  "supplier_name": "Awadh Grain Traders",
+  "invoice_number": "AGT-0802",
+  "invoice_date": "2026-08-08",
+  "currency": "INR",
+  "invoice_total": 115420,
+  "extraction_method": "cached",
+  "line_items": [
+    {
+      "line_id": "line_01",
+      "raw_description": "AASHIRVAAD ATTA 5KG BAG",
+      "quantity": 200,
+      "unit": "bag",
+      "unit_cost": 222,
+      "tax_amount": 0,
+      "line_total": 44400,
+      "page_number": 1,
+      "extraction_confidence": 0.99
+    },
+    {
+      "line_id": "line_02",
+      "raw_description": "SONA MASURI RICE 1 KG",
+      "quantity": 310,
+      "unit": "packet",
+      "unit_cost": 58,
+      "tax_amount": 0,
+      "line_total": 17980,
+      "page_number": 1,
+      "extraction_confidence": 0.99
+    },
+    {
+      "line_id": "line_03",
+      "raw_description": "INDIA GATE BASMATI 5KG",
+      "quantity": 50,
+      "unit": "bag",
+      "unit_cost": 520,
+      "tax_amount": 0,
+      "line_total": 26000,
+      "page_number": 1,
+      "extraction_confidence": 0.99
+    },
+    {
+      "line_id": "line_04",
+      "raw_description": "MAIDA 1KG PKT",
+      "quantity": 120,
+      "unit": "packet",
+      "unit_cost": 34,
+      "tax_amount": 0,
+      "line_total": 4080,
+      "page_number": 1,
+      "extraction_confidence": 0.99
+    },
+    {
+      "line_id": "line_05",
+      "raw_description": "SOOJI RAVA 500G",
+      "quantity": 80,
+      "unit": "packet",
+      "unit_cost": 24,
+      "tax_amount": 0,
+      "line_total": 1920,
+      "page_number": 1,
+      "extraction_confidence": 0.99
+    },
+    {
+      "line_id": "line_06",
+      "raw_description": "KABULI CHANA 1KG",
+      "quantity": 80,
+      "unit": "packet",
+      "unit_cost": 118,
+      "tax_amount": 0,
+      "line_total": 9440,
+      "page_number": 1,
+      "extraction_confidence": 0.99
+    },
+    {
+      "line_id": "line_07",
+      "raw_description": "RAJMA CHITRA 1KG",
+      "quantity": 80,
+      "unit": "packet",
+      "unit_cost": 132,
+      "tax_amount": 0,
+      "line_total": 10560,
+      "page_number": 1,
+      "extraction_confidence": 0.99
+    },
+    {
+      "line_id": "line_08",
+      "raw_description": "DALIA 500 GM",
+      "quantity": 40,
+      "unit": "packet",
+      "unit_cost": 26,
+      "tax_amount": 0,
+      "line_total": 1040,
+      "page_number": 1,
+      "extraction_confidence": 0.99
+    }
+  ],
+  "extraction_warnings": []
+}

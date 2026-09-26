@@ -1,0 +1,10 @@
+runtime/
+__pycache__/
+*.pyc
+.pytest_cache/
+.env
+.venv/
+node_modules/
+.next/
+apps/web/.env.local
+.DS_Store

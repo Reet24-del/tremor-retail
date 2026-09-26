@@ -1,0 +1,144 @@
+{
+  "source_file": "SW-112.pdf",
+  "supplier_name": "Shakti Wholesale",
+  "invoice_number": "SW-112",
+  "invoice_date": "2026-06-29",
+  "currency": "INR",
+  "invoice_total": 193940,
+  "extraction_method": "cached",
+  "line_items": [
+    {
+      "line_id": "line_01",
+      "raw_description": "SUNPURE OIL 1 LTR",
+      "quantity": 330,
+      "unit": "bottle",
+      "unit_cost": 118,
+      "tax_amount": 0,
+      "line_total": 38940,
+      "page_number": 1,
+      "extraction_confidence": 0.99
+    },
+    {
+      "line_id": "line_02",
+      "raw_description": "FORTUNE KACHI GHANI 1L",
+      "quantity": 180,
+      "unit": "bottle",
+      "unit_cost": 152,
+      "tax_amount": 0,
+      "line_total": 27360,
+      "page_number": 1,
+      "extraction_confidence": 0.99
+    },
+    {
+      "line_id": "line_03",
+      "raw_description": "SUGAR M30 1KG PKT",
+      "quantity": 410,
+      "unit": "packet",
+      "unit_cost": 42,
+      "tax_amount": 0,
+      "line_total": 17220,
+      "page_number": 1,
+      "extraction_confidence": 0.99
+    },
+    {
+      "line_id": "line_04",
+      "raw_description": "TOOR DAL PREMIUM 1 KG",
+      "quantity": 210,
+      "unit": "packet",
+      "unit_cost": 128,
+      "tax_amount": 0,
+      "line_total": 26880,
+      "page_number": 1,
+      "extraction_confidence": 0.99
+    },
+    {
+      "line_id": "line_05",
+      "raw_description": "MOONG DAL YELLOW 1KG",
+      "quantity": 130,
+      "unit": "packet",
+      "unit_cost": 112,
+      "tax_amount": 0,
+      "line_total": 14560,
+      "page_number": 1,
+      "extraction_confidence": 0.99
+    },
+    {
+      "line_id": "line_06",
+      "raw_description": "TATA SALT 1KG",
+      "quantity": 380,
+      "unit": "packet",
+      "unit_cost": 22,
+      "tax_amount": 0,
+      "line_total": 8360,
+      "page_number": 1,
+      "extraction_confidence": 0.99
+    },
+    {
+      "line_id": "line_07",
+      "raw_description": "TATA TEA GOLD 250GM",
+      "quantity": 170,
+      "unit": "packet",
+      "unit_cost": 138,
+      "tax_amount": 0,
+      "line_total": 23460,
+      "page_number": 1,
+      "extraction_confidence": 0.99
+    },
+    {
+      "line_id": "line_08",
+      "raw_description": "AMUL GHEE TIN 1 LTR",
+      "quantity": 40,
+      "unit": "tin",
+      "unit_cost": 560,
+      "tax_amount": 0,
+      "line_total": 22400,
+      "page_number": 1,
+      "extraction_confidence": 0.99
+    },
+    {
+      "line_id": "line_09",
+      "raw_description": "POHA THICK 500 GM",
+      "quantity": 140,
+      "unit": "packet",
+      "unit_cost": 28,
+      "tax_amount": 0,
+      "line_total": 3920,
+      "page_number": 1,
+      "extraction_confidence": 0.99
+    },
+    {
+      "line_id": "line_10",
+      "raw_description": "BESAN 500G",
+      "quantity": 130,
+      "unit": "packet",
+      "unit_cost": 46,
+      "tax_amount": 0,
+      "line_total": 5980,
+      "page_number": 1,
+      "extraction_confidence": 0.99
+    },
+    {
+      "line_id": "line_11",
+      "raw_description": "HALDI PWD 100GM",
+      "quantity": 90,
+      "unit": "packet",
+      "unit_cost": 24,
+      "tax_amount": 0,
+      "line_total": 2160,
+      "page_number": 1,
+      "extraction_confidence": 0.99
+    },
+    {
+      "line_id": "line_12",
+      "raw_description": "LAL MIRCH PWD 100GM",
+      "quantity": 90,
+      "unit": "packet",
+      "unit_cost": 30,
+      "tax_amount": 0,
+      "line_total": 2700,
+      "page_number": 1,
+      "extraction_confidence": 0.99
+    }
+  ],
+  "extraction_warnings": []
+}

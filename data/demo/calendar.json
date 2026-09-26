@@ -1,0 +1,20 @@
+{
+  "store": "Gupta General Store, Indira Nagar",
+  "promotions": [
+    {
+      "product_id": "SKU-OIL-1L",
+      "start": "2026-07-01",
+      "end": "2026-07-05",
+      "price": 129,
+      "label": "Monsoon oil offer"
+    }
+  ],
+  "festivals": [
+    {
+      "name": "Local mela week (store calendar)",
+      "start": "2026-08-07",
+      "end": "2026-08-16",
+      "affects": "beverages"
+    }
+  ]
+}

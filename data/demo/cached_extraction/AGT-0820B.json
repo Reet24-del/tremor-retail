@@ -1,0 +1,23 @@
+{
+  "source_file": "AGT-0820B.pdf",
+  "supplier_name": "Awadh Grain Traders",
+  "invoice_number": "AGT-0820B",
+  "invoice_date": "2026-08-20",
+  "currency": "INR",
+  "invoice_total": 31200,
+  "extraction_method": "cached",
+  "line_items": [
+    {
+      "line_id": "line_01",
+      "raw_description": "INDIA GATE BASMATI 5KG (BULK ORDER)",
+      "quantity": 60,
+      "unit": "bag",
+      "unit_cost": 520,
+      "tax_amount": 0,
+      "line_total": 31200,
+      "page_number": 1,
+      "extraction_confidence": 0.99
+    }
+  ],
+  "extraction_warnings": []
+}

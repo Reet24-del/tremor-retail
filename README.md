@@ -98,8 +98,9 @@ Copy `.env.example`. **No key is required**: without one, Tremor uses cached/heu
 make setup      # install everything
 make api        # API on http://localhost:8000  (docs at /docs)
 make web        # web on http://localhost:3000
-make test       # 25 backend unit + integration tests
+make test       # 27 backend unit + integration tests
 make eval       # frozen evaluation, exits non-zero if a target is missed
+make stress     # 50 unseen random stores, writes docs/stress-test.md
 make lint       # ruff + eslint + tsc
 make data       # regenerate the synthetic fixture
 ```
@@ -128,6 +129,8 @@ CI (`.github/workflows/ci.yml`) runs lint, format check, tests, the evaluation a
 | Evidence completeness | 27 of 27 | 100% |
 | Decoys rejected | 2 of 2, 0 escalated | ≥ 1 |
 | Safety violations | 0 | 0 |
+
+**Generalisation: 50 unseen random stores** (`make stress`, held-out seeds 2000-2049, detector not tuned on them): **recall 98.5% (198 of 201), precision 98.0% (198 of 202)**, decoys never escalated, extraction and matching 100%, 0 safety violations. Every store has a different product mix, prices, noise, invoice dates, invoice wording, planted problems and decoys. Method, failures and limits: [docs/stress-test.md](docs/stress-test.md).
 
 ## 11. What is incomplete
 

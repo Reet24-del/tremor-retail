@@ -26,6 +26,8 @@ jobs:
       - run: pytest -q
       - name: Frozen evaluation must meet PRD targets
         run: python ../../scripts/run_evaluation.py
+      - name: Stress test on 10 unseen random stores
+        run: python ../../scripts/stress_test.py --stores 10 --seed-start 3000 --doc /tmp/stress.md
 
   web:
     name: Web · lint, typecheck, build

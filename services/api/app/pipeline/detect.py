@@ -37,7 +37,15 @@ class Candidate:
     ranking: dict = field(default_factory=dict)
 
 
-def detect(features: dict[str, ProductFeatures], df: pd.DataFrame, calendar: dict) -> list[Candidate]:
+def detect(
+    features: dict[str, ProductFeatures],
+    df: pd.DataFrame,
+    calendar: dict,
+    pending_products: set[str] | None = None,
+) -> list[Candidate]:
+    """Find candidates. `pending_products` have invoice lines awaiting match confirmation; their stock
+    cannot be reconciled yet, so stock discrepancies for them are held as needs-data, never published."""
+    pending_products = pending_products or set()
     cands: list[Candidate] = []
 
     # 1. Supplier cost change -> margin leakage
@@ -74,6 +82,12 @@ def detect(features: dict[str, ProductFeatures], df: pd.DataFrame, calendar: dic
                     var_z.get(pid, 0.0),
                     f.variance_value,
                     {"variance_units": f.variance_units},
+                    (
+                        "Needs data: an invoice line that may belong to this product is waiting for match "
+                        "confirmation, so its stock cannot be reconciled yet. Confirm the match on Data sources."
+                    )
+                    if pid in pending_products
+                    else None,
                 )
             )
 

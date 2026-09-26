@@ -3,6 +3,7 @@
 Everything the generators produce comes from this file plus a fixed seed, so the
 fixture is fully reproducible.
 """
+
 from datetime import date
 
 SEED = 26
@@ -11,12 +12,9 @@ START = date(2026, 6, 27)
 DAYS = 90  # 27 Jun 2026 to 24 Sep 2026
 
 SUPPLIERS = {
-    "SHAKTI": {"name": "Shakti Wholesale", "addr": "Naka Hindola, Lucknow", "prefix": "SW",
-               "gstin": "09ABCDE1234F1Z5"},
-    "AWADH": {"name": "Awadh Grain Traders", "addr": "Aminabad, Lucknow", "prefix": "AGT",
-              "gstin": "09FGHIJ5678K1Z2"},
-    "METRO": {"name": "Metro FMCG Distributors", "addr": "Chinhat, Lucknow", "prefix": "MFD",
-              "gstin": "09KLMNO9012P1Z8"},
+    "SHAKTI": {"name": "Shakti Wholesale", "addr": "Naka Hindola, Lucknow", "prefix": "SW", "gstin": "09ABCDE1234F1Z5"},
+    "AWADH": {"name": "Awadh Grain Traders", "addr": "Aminabad, Lucknow", "prefix": "AGT", "gstin": "09FGHIJ5678K1Z2"},
+    "METRO": {"name": "Metro FMCG Distributors", "addr": "Chinhat, Lucknow", "prefix": "MFD", "gstin": "09KLMNO9012P1Z8"},
 }
 
 # Invoice numbers and dates per supplier: (number, date). The last one is "current".
@@ -69,10 +67,10 @@ BEVERAGES = {"SKU-COKE-750", "SKU-FROOTI-600", "SKU-SPRITE-750", "SKU-WATER-1L"}
 
 # Planted cost paths per invoice index (0, 1, 2). Anything not listed gets small noise.
 PLANTED_COSTS = {
-    "SKU-OIL-1L": [118, 118, 132],    # S1 hero
-    "SKU-ATTA-5K": [210, 222, 236],   # S2 flour, two rises
-    "SKU-SUG-1K": [42, 42, 47],       # S4 sugar
-    "SKU-TOOR-1K": [128, 128, 141],   # S5 toor dal
+    "SKU-OIL-1L": [118, 118, 132],  # S1 hero
+    "SKU-ATTA-5K": [210, 222, 236],  # S2 flour, two rises
+    "SKU-SUG-1K": [42, 42, 47],  # S4 sugar
+    "SKU-TOOR-1K": [128, 128, 141],  # S5 toor dal
 }
 # Planted selling price changes: product -> list of (from_date, price)
 PRICE_CHANGES = {
@@ -80,13 +78,16 @@ PRICE_CHANGES = {
 }
 # Store calendar (also written to data/demo/calendar.json)
 PROMOTIONS = [
-    {"product_id": "SKU-OIL-1L", "start": date(2026, 7, 1), "end": date(2026, 7, 5), "price": 129,
-     "label": "Monsoon oil offer"},
+    {"product_id": "SKU-OIL-1L", "start": date(2026, 7, 1), "end": date(2026, 7, 5), "price": 129, "label": "Monsoon oil offer"},
 ]
-FESTIVAL = {"name": "Local mela week (store calendar)", "start": date(2026, 8, 7), "end": date(2026, 8, 16),
-            "beverage_multiplier": 2.5}
+FESTIVAL = {
+    "name": "Local mela week (store calendar)",
+    "start": date(2026, 8, 7),
+    "end": date(2026, 8, 16),
+    "beverage_multiplier": 2.5,
+}
 # Planted stock shrink (count adjustments): product -> (date, units short)
 SHRINK = {
-    "SKU-OIL-1L": (date(2026, 9, 18), 12),   # part of hero evidence
-    "SKU-RICE-1K": (date(2026, 9, 2), 20),   # S3 inventory discrepancy
+    "SKU-OIL-1L": (date(2026, 9, 18), 12),  # part of hero evidence
+    "SKU-RICE-1K": (date(2026, 9, 2), 20),  # S3 inventory discrepancy
 }

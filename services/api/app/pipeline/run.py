@@ -50,8 +50,9 @@ def _slug(name: str) -> str:
     return re.sub(r"[^a-z0-9]+", "_", Path(name).stem.lower()).strip("_")
 
 
-def demo_inputs() -> RunInputs:
-    d = config.DEMO_DIR
+def demo_inputs(data_dir: Path | None = None) -> RunInputs:
+    """Inputs for a bundled synthetic store. Defaults to the frozen demo fixture."""
+    d = data_dir or config.DEMO_DIR
     frozen = {
         p["raw_description"]: p["product_id"] for p in json.loads((d / "labels" / "product_matches.json").read_text())["pairs"]
     }
@@ -65,7 +66,7 @@ def demo_inputs() -> RunInputs:
         store_name=cal.get("store", "Sample grocery store"),
         cached_dir=d / "cached_extraction",
         frozen_matches=frozen,
-        dataset_version=DATASET_DEMO,
+        dataset_version=json.loads((d / "labels" / "signals.json").read_text()).get("dataset_version", DATASET_DEMO),
     )
 
 
@@ -225,7 +226,8 @@ class Run:
 
         # 5. Finding unusual changes
         self._stage("finding_unusual_changes")
-        cands = detect(features, df, inp.calendar)
+        pending = {m.product_id for m in matches.values() if m.status == "needs_review" and m.product_id}
+        cands = detect(features, df, inp.calendar, pending_products=pending)
 
         # 6. Linking evidence
         self._stage("linking_evidence")

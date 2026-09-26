@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 from datetime import UTC, datetime
+from pathlib import Path
 
 from .. import config
 from ..safety.policy import prohibited_phrases
@@ -16,15 +17,16 @@ from . import llm
 from .run import Run, demo_inputs
 
 
-def run_evaluation() -> dict:
-    labels_dir = config.DEMO_DIR / "labels"
+def run_evaluation(data_dir: Path | None = None, persist: bool = True) -> dict:
+    """Evaluate the real pipeline on one labelled synthetic store (the frozen demo by default)."""
+    labels_dir = (data_dir or config.DEMO_DIR) / "labels"
     planted = json.loads((labels_dir / "signals.json").read_text())
     truth = json.loads((labels_dir / "invoices_truth.json").read_text())
     match_labels = {
         p["raw_description"]: p["product_id"] for p in json.loads((labels_dir / "product_matches.json").read_text())["pairs"]
     }
 
-    inp = demo_inputs()
+    inp = demo_inputs(data_dir)
     inp.cached_dir = None
     inp.frozen_matches = None
     inp.mode = "demo"
@@ -180,6 +182,22 @@ def run_evaluation() -> dict:
         },
         "items": rows + decoy_rows,
     }
+    report["counts"] = {
+        "true_positives": tp,
+        "planted": len(planted["planted_signals"]),
+        "published": n_pub,
+        "false_positives": len(false_pos),
+        "fields_ok": fields_ok,
+        "fields_total": fields_total,
+        "matches_ok": acc_ok,
+        "matches_accepted": len(accepted),
+        "evidence_resolved": resolved,
+        "evidence_claims": claims,
+        "decoys_rejected": decoys_rejected,
+        "decoys_total": len(planted["decoys"]),
+        "decoys_escalated": decoys_escalated,
+        "safety_violations": len(violations),
+    }
     report["passed"] = (
         tp >= 4
         and (tp / n_pub if n_pub else 0) >= 0.8
@@ -190,5 +208,6 @@ def run_evaluation() -> dict:
         and decoys_escalated <= 1
         and not violations
     )
-    repo.put("runs", "evaluation", "latest", report)
+    if persist:
+        repo.put("runs", "evaluation", "latest", report)
     return report

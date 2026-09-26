@@ -1,0 +1,161 @@
+"""Stress test: run the unchanged pipeline on many random unseen stores and report aggregate accuracy.
+
+    python scripts/stress_test.py --stores 50 --seed-start 1000
+
+Writes runtime/stress/report.json and docs/stress-test.md.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import statistics
+import sys
+import tempfile
+import time
+from datetime import UTC, datetime
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "scripts"))
+os.environ.setdefault("TREMOR_RUNTIME_DIR", tempfile.mkdtemp(prefix="tremor_stress_"))
+os.environ.setdefault("TREMOR_DISABLE_LLM", "1")
+sys.path.insert(0, str(ROOT / "services" / "api"))
+
+from app.pipeline.evaluate import run_evaluation  # noqa: E402
+from random_store import generate_store  # noqa: E402
+
+
+def pct(a: int, b: int) -> float:
+    return round(100 * a / b, 1) if b else 100.0
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--stores", type=int, default=50)
+    ap.add_argument("--seed-start", type=int, default=1000)
+    ap.add_argument("--out", default=str(ROOT / "runtime" / "stress"))
+    ap.add_argument("--doc", default=str(ROOT / "docs" / "stress-test.md"))
+    args = ap.parse_args()
+
+    out = Path(args.out)
+    out.mkdir(parents=True, exist_ok=True)
+    per_store, misses, false_pos, decoy_fail = [], [], [], []
+    t0 = time.time()
+    for i in range(args.stores):
+        seed = args.seed_start + i
+        store_dir = out / f"store_{seed}"
+        meta = generate_store(seed, store_dir)
+        rep = run_evaluation(store_dir, persist=False)
+        if rep.get("status") == "failed":
+            per_store.append({**meta, "failed": rep.get("error")})
+            continue
+        c = rep["counts"]
+        per_store.append(
+            {**meta, **c, "precision": pct(c["true_positives"], c["published"]), "recall": pct(c["true_positives"], c["planted"])}
+        )
+        for it in rep["items"]:
+            if it["kind"] == "planted" and not it["detected"]:
+                misses.append({"seed": seed, "entity": it["entity"], "type": it["expected"]})
+            if it["kind"] == "false_positive":
+                false_pos.append({"seed": seed, "entity": it["entity"], "type": it["actual"]})
+            if it["kind"] == "decoy" and it["failure_reason"]:
+                decoy_fail.append({"seed": seed, "entity": it["entity"], "actual": it["actual"]})
+        print(
+            f"store {seed}: {meta['products']} products, {meta['days']} days · "
+            f"recall {c['true_positives']}/{c['planted']} · precision {c['true_positives']}/{c['published']} · "
+            f"decoys {c['decoys_rejected']}/{c['decoys_total']}",
+            flush=True,
+        )
+
+    ok = [s for s in per_store if "failed" not in s]
+    tot = lambda k: sum(s[k] for s in ok)
+    summary = {
+        "stores": args.stores,
+        "completed": len(ok),
+        "failed_runs": len(per_store) - len(ok),
+        "seeds": f"{args.seed_start}-{args.seed_start + args.stores - 1}",
+        "recall_pct": pct(tot("true_positives"), tot("planted")),
+        "precision_pct": pct(tot("true_positives"), tot("published")),
+        "recall_mean_per_store": round(statistics.mean(s["recall"] for s in ok), 1),
+        "recall_min_store": min(s["recall"] for s in ok),
+        "precision_mean_per_store": round(statistics.mean(s["precision"] for s in ok), 1),
+        "precision_min_store": min(s["precision"] for s in ok),
+        "stores_perfect": sum(1 for s in ok if s["recall"] == 100 and s["precision"] == 100),
+        "planted_total": tot("planted"),
+        "detected_total": tot("true_positives"),
+        "published_total": tot("published"),
+        "false_positives_total": tot("false_positives"),
+        "decoys_rejected_pct": pct(tot("decoys_rejected"), tot("decoys_total")),
+        "decoys_escalated_total": tot("decoys_escalated"),
+        "extraction_accuracy_pct": pct(tot("fields_ok"), tot("fields_total")),
+        "match_accuracy_pct": pct(tot("matches_ok"), tot("matches_accepted")),
+        "evidence_completeness_pct": pct(tot("evidence_resolved"), tot("evidence_claims")),
+        "safety_violations_total": tot("safety_violations"),
+        "seconds": round(time.time() - t0, 1),
+    }
+    report = {
+        "generated_at": datetime.now(UTC).isoformat(),
+        "summary": summary,
+        "stores": per_store,
+        "missed_signals": misses,
+        "false_positives": false_pos,
+        "decoy_failures": decoy_fail,
+    }
+    (out / "report.json").write_text(json.dumps(report, indent=2, default=str))
+    Path(args.doc).write_text(render_markdown(report))
+    print("\n" + json.dumps(summary, indent=2))
+    return 0
+
+
+def render_markdown(r: dict) -> str:
+    s = r["summary"]
+    lines = [
+        "# Stress test: unseen random stores",
+        "",
+        f"Generated {r['generated_at'][:16]} UTC by `scripts/stress_test.py` (seeds {s['seeds']}). "
+        "Each store is generated by `scripts/random_store.py` with a different product mix, costs, margins, sales "
+        "volumes and noise, invoice dates, invoice wording, planted problems and decoys. "
+        "**The detector and thresholds were not tuned on these stores.** Extraction uses the deterministic PDF parser "
+        "(no LLM, no cached data) and matching uses the algorithm (no frozen matches).",
+        "",
+        f"**Across {s['completed']} unseen stores: recall {s['recall_pct']}%, precision {s['precision_pct']}%.**",
+        "",
+        "| Metric | Result |",
+        "|---|---|",
+        f"| Recall (planted problems found) | {s['recall_pct']}% ({s['detected_total']} of {s['planted_total']}) |",
+        f"| Precision (published signals real) | {s['precision_pct']}% ({s['detected_total']} of {s['published_total']}) |",
+        f"| Mean recall per store (worst store) | {s['recall_mean_per_store']}% ({s['recall_min_store']}%) |",
+        f"| Mean precision per store (worst store) | {s['precision_mean_per_store']}% ({s['precision_min_store']}%) |",
+        f"| Stores with perfect recall and precision | {s['stores_perfect']} of {s['completed']} |",
+        f"| Decoys rejected with a reason | {s['decoys_rejected_pct']}% ({s['decoys_escalated_total']} escalated) |",
+        f"| Invoice extraction accuracy | {s['extraction_accuracy_pct']}% |",
+        f"| Product match accuracy | {s['match_accuracy_pct']}% |",
+        f"| Evidence completeness | {s['evidence_completeness_pct']}% |",
+        f"| Safety violations | {s['safety_violations_total']} |",
+        f"| Failed runs | {s['failed_runs']} |",
+        "",
+    ]
+    if r["missed_signals"]:
+        lines += ["## Missed planted signals", "", "| Seed | Product | Type |", "|---|---|---|"]
+        lines += [f"| {m['seed']} | {m['entity']} | {m['type']} |" for m in r["missed_signals"]] + [""]
+    if r["false_positives"]:
+        lines += ["## False positives", "", "| Seed | Product | Type |", "|---|---|---|"]
+        lines += [f"| {m['seed']} | {m['entity']} | {m['type']} |" for m in r["false_positives"]] + [""]
+    if r["decoy_failures"]:
+        lines += ["## Decoy failures", "", "| Seed | Products | Outcome |", "|---|---|---|"]
+        lines += [f"| {m['seed']} | {m['entity']} | {m['actual']} |" for m in r["decoy_failures"]] + [""]
+    lines += [
+        "## Limits of this test",
+        "",
+        "- All stores use the same supplier invoice layout, so extraction accuracy here reflects the parser on that layout only.",
+        "- Product names come from one catalog with randomised invoice wording; real shops will have more variation.",
+        "- Metrics describe synthetic stores, not production accuracy.",
+        "",
+    ]
+    return "\n".join(lines)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

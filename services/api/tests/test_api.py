@@ -111,6 +111,8 @@ def test_csv_only_upload_finds_stock_gaps_and_asks_for_bills():
     assert rice["facts"]["stock_variance_units"] == -20
     assert "median selling price" in rice["financial_impact"]["method"]
     assert rice["claims"]
+    assert rice["translations"]["hi"]["title"]
+    assert by_product["SKU-RICE-1K"]["translations"]["hi"]["title"] == rice["translations"]["hi"]["title"]
     assert rice["evidence_strength_components"]["source_corroboration"] == 0.5
     assert any("sales and stock file alone" in lim for lim in rice["limitations"])
 

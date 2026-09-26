@@ -110,6 +110,7 @@ Verified original extraction snapshots are reused; unreadable extractions are at
 ## Claim citations
 
 Signal detail includes `claims`, each with `claim_id`, `field`, `text`, `kind`, and `evidence_ids`.
+Claims currently cover the English canonical text. Hindi `translations` remain available in summaries and detail; use the original evidence panel for translated views.
 Render citations adjacent to their sentence and open `GET /api/evidence/{evidence_id}` when selected.
 `kind` distinguishes observation, interpretation, and recommendation. Financial calculation wording and rejected explanations are also cited.
 Do not treat the existence of a signal-wide evidence list as proof of every sentence.

@@ -117,7 +117,7 @@ The backend holds uncertain invoice fields and conflicting costs for review, rej
 original extraction plus correction history. Model explanations select from evidence-validated wording choices; arbitrary
 paraphrases are rejected. Human reviews remain separate from invoice-field corrections.
 
-Backend verification: 52 tests pass; the frozen fixture detects 5/5 signals with 5/5 precision and 45/45 claim coverage.
+Backend verification: 54 tests pass; the frozen fixture detects 5/5 signals with 5/5 precision and 45/45 claim coverage.
 The ten-store CI stress set (seeds 3000–3009) matches the original backend at 38/41 recall and 38/38 precision.
 Three consecutive local HTTP smoke runs verified the INR 1,680 hero signal, original evidence pages, and saved reviews.
 Live Groq and public-host verification remain pending a configured key and deployment; mocked-provider tests are included.

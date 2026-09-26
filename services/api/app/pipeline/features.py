@@ -88,6 +88,8 @@ class ProductFeatures:
     discrepancy_rows: list[int] = field(default_factory=list)
     discrepancy_dates: list[str] = field(default_factory=list)
     completeness: float = 1.0
+    stock_mode: str = "invoices"  # "invoices" = deliveries from bills, "inferred" = deliveries inferred from stock jumps
+    value_basis: str = "latest_cost"  # "latest_cost" or "selling_price" when no bill is available
 
     def as_row(self) -> dict:
         d = {
@@ -157,21 +159,18 @@ def build_features(df: pd.DataFrame, purchases_by_product: dict[str, list[Purcha
             f.latest = buys[-1]
 
         # stock reconciliation over the whole period
-        first_day, last_day = g["transaction_date"].iloc[0], g["transaction_date"].iloc[-1]
         f.opening_stock = float(g["opening_stock"].iloc[0])
         f.actual_closing = float(g["closing_stock"].iloc[-1])
-        f.purchased_units = float(sum(p.quantity for p in buys if first_day <= p.date <= last_day))
         f.damage = float(g["recorded_damage"].sum())
         f.returns = float(g["recorded_returns"].sum())
-        f.expected_closing = expected_closing_stock(f.opening_stock, f.purchased_units, units, f.damage, f.returns)
-        f.variance_units = stock_variance_units(f.actual_closing, f.expected_closing)
-        cost_basis = f.latest.unit_cost if f.latest else 0.0
-        f.variance_value = abs(f.variance_units) * cost_basis
-        f.variance_pct = abs(f.variance_units) / max(1.0, units + f.purchased_units) * 100
-        # daily reconciliation pinpoints which rows do not add up
-        bought_on = {}
+        first_day, last_day = g["transaction_date"].iloc[0], g["transaction_date"].iloc[-1]
+        bought_on: dict = {}
         for p in buys:
             bought_on[p.date] = bought_on.get(p.date, 0) + p.quantity
+        # Without supplier bills, a stock increase is treated as an (unverified) delivery and only
+        # unexplained decreases count as discrepancies. With bills, every row must reconcile exactly.
+        f.stock_mode = "invoices" if buys else "inferred"
+        inferred_receipts = 0.0
         for _, r in g.iterrows():
             exp = expected_closing_stock(
                 r["opening_stock"],
@@ -180,8 +179,25 @@ def build_features(df: pd.DataFrame, purchases_by_product: dict[str, list[Purcha
                 r["recorded_damage"],
                 r["recorded_returns"],
             )
-            if abs(r["closing_stock"] - exp) > 1e-6:
+            diff = float(r["closing_stock"] - exp)
+            if f.stock_mode == "inferred" and diff > 0:
+                inferred_receipts += diff
+                continue
+            if abs(diff) > 1e-6:
                 f.discrepancy_rows.append(int(r["source_row"]))
                 f.discrepancy_dates.append(str(r["transaction_date"]))
+        if f.stock_mode == "invoices":
+            f.purchased_units = float(sum(p.quantity for p in buys if first_day <= p.date <= last_day))
+        else:
+            f.purchased_units = inferred_receipts
+        f.expected_closing = expected_closing_stock(f.opening_stock, f.purchased_units, units, f.damage, f.returns)
+        f.variance_units = stock_variance_units(f.actual_closing, f.expected_closing)
+        if f.latest:
+            cost_basis = f.latest.unit_cost
+        else:
+            cost_basis = float(g["unit_selling_price"].median())
+            f.value_basis = "selling_price"
+        f.variance_value = abs(f.variance_units) * cost_basis
+        f.variance_pct = abs(f.variance_units) / max(1.0, units + f.purchased_units) * 100
         out[pid] = f
     return out

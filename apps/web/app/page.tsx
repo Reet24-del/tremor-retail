@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import AddBillsBanner from "@/components/AddBillsBanner";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import EvaluationPanel from "@/components/EvaluationPanel";
@@ -53,7 +54,7 @@ export default function Overview() {
           <div style={{ maxWidth: 620 }}>
             <h2>Start an analysis</h2>
             <p className="muted" style={{ marginTop: 4 }}>
-              You need one sales and stock CSV and at least two supplier invoice PDFs, so old and new costs can be compared.
+              Start with your sales and stock CSV. Supplier bills are optional: add them to also check whether rising costs are eating your margin.
               The sample store runs instantly with synthetic data.
             </p>
           </div>
@@ -67,6 +68,7 @@ export default function Overview() {
         {err && <div className="alert alert-error" style={{ marginTop: 12 }}>{err}</div>}
       </section>
 
+      <AddBillsBanner />
       <div className="grid grid-4" style={{ marginBottom: 16 }}>
         <div className="card card-pad">
           <div className="stat-label">Records analysed</div>

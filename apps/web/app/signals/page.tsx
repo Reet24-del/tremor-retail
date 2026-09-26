@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import AddBillsBanner from "@/components/AddBillsBanner";
 import { useEffect, useState } from "react";
 import SignalCard from "@/components/SignalCard";
 import { Loading, PageHead } from "@/components/ui";
@@ -54,6 +55,7 @@ export default function SignalsPage() {
             <button aria-pressed={filter === "all"} onClick={() => setFilter("all")}>All</button>
           </div>
         } />
+      <AddBillsBanner />
       {err && <div className="alert alert-error">{err}</div>}
       {!data ? <Loading label="Loading signals" /> : (
         <div className="stack">

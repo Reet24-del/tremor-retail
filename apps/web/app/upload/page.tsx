@@ -77,12 +77,12 @@ export default function UploadPage() {
     }
   };
 
-  const canStart = !!csv && check?.ok && pdfs.length >= 2 && !busy;
+  const canStart = !!csv && check?.ok && !busy;
 
   return (
     <main className="page">
       <PageHead title="Upload my files" crumbs={<><Link href="/">Overview</Link> / Upload</>}
-        desc="One sales and stock CSV plus at least two supplier invoice PDFs. Files are only used for this analysis. Tremor never changes your records or takes any action." />
+        desc="Your sales and stock CSV is enough to find stock that does not add up. Supplier bills are optional and unlock margin checks. Files are only used for this analysis; Tremor never changes your records." />
       <div className="grid grid-2">
         <section className="card card-pad stack">
           <div className="row between"><h2>1. Sales and stock CSV</h2><a href={sampleCsvUrl} download>Download example CSV</a></div>
@@ -103,8 +103,8 @@ export default function UploadPage() {
         </section>
 
         <section className="card card-pad stack">
-          <h2>2. Supplier invoice PDFs</h2>
-          <p className="faint">At least two bills, so Tremor can compare an older cost with the latest one. Digital PDFs work best.</p>
+          <h2>2. Supplier bills <span className="faint" style={{ fontWeight: 400 }}>(optional)</span></h2>
+          <p className="faint">Add bills to check margins. Bills from at least two dates let Tremor compare an older cost with the latest one. You can also add them later. Digital PDFs work best.</p>
           <Drop accept="application/pdf,.pdf" multiple label="Choose or drop invoice PDFs" hint="PDF, up to 10 MB each" onFiles={addPdfs} />
           {pdfs.length > 0 && (
             <ul className="file-list">
@@ -114,7 +114,8 @@ export default function UploadPage() {
               ))}
             </ul>
           )}
-          {pdfs.length === 1 && <div className="alert alert-warn">Add one more invoice so costs can be compared.</div>}
+          {pdfs.length === 0 && <p className="faint">No bills: Tremor will check stock only and ask for bills if it needs them.</p>}
+          {pdfs.length === 1 && <div className="alert alert-warn">One bill gives no earlier cost to compare with. Add another from a different date to check margins.</div>}
         </section>
       </div>
       {errors.length > 0 && (
@@ -123,7 +124,7 @@ export default function UploadPage() {
         </div>
       )}
       <div className="row" style={{ marginTop: 16 }}>
-        <button className="btn btn-primary btn-lg" disabled={!canStart} onClick={start}>{busy ? "Uploading…" : "Start analysis"}</button>
+        <button className="btn btn-primary btn-lg" disabled={!canStart} onClick={start}>{busy ? "Uploading…" : pdfs.length ? "Start analysis" : "Check stock now"}</button>
         <span className="faint">No automatic action will happen. You review every finding.</span>
       </div>
     </main>

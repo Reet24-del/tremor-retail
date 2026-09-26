@@ -186,8 +186,10 @@ class Run:
             for line in inv.line_items:
                 line_index[line.line_id] = (inv, line)
         if not invoices:
-            raise ValueError("No supplier invoice could be read")
-        if len({i.invoice_date for i in invoices}) < 2:
+            self.status.warnings.append(
+                "No supplier bills were used: stock was checked from the sales file alone and margin checks were skipped."
+            )
+        if invoices and len({i.invoice_date for i in invoices}) < 2:
             self.status.warnings.append("Only one invoice date: cost changes cannot be established without a baseline")
 
         # 3. Matching products
@@ -278,7 +280,12 @@ class Run:
                 impact = {
                     "amount": round(f.variance_value, 2),
                     "label": "estimated stock value not reconciled",
-                    "method": f"{abs(int(f.variance_units))} units x latest unit cost INR {f.latest.unit_cost:g}",
+                    "method": (
+                        f"{abs(int(f.variance_units))} units x latest unit cost INR {f.latest.unit_cost:g}"
+                        if f.value_basis == "latest_cost"
+                        else f"{abs(int(f.variance_units))} units x median selling price INR "
+                        f"{f.variance_value / max(1, abs(f.variance_units)):g} (no supplier bill to value it at cost)"
+                    ),
                 }
             limitations = [
                 "Synthetic demo data" if inp.mode == "demo" else "Based only on the uploaded files",
@@ -291,6 +298,11 @@ class Run:
                 if evidence[e]["source_type"] == "invoice_pdf"
             }:
                 limitations.append("Invoice fields come from cached validated extraction (verified against the PDF text)")
+            if c.candidate_type == "inventory_discrepancy" and f.stock_mode == "inferred":
+                limitations.append(
+                    "Checked from the sales and stock file alone: deliveries were inferred from stock increases. "
+                    "Add this supplier's bills to confirm."
+                )
             sig = {
                 "signal_id": d["signal_id"],
                 "run_id": rid,
@@ -337,6 +349,12 @@ class Run:
             "rejected_candidates": len(rejected),
             "amount_requiring_investigation": round(sum(s["financial_impact"]["amount"] for s in published.values()), 2),
             "extraction_methods": sorted(methods),
+            "bills_uploaded": len(invoices),
+            "margin_check": (
+                "skipped_no_bills"
+                if not invoices
+                else ("needs_more_bills" if len({i.invoice_date for i in invoices}) < 2 else "done")
+            ),
             "llm_enabled": llm.enabled(),
             "matches": {
                 s: sum(1 for m in matches.values() if m.status == s) for s in ("accepted", "needs_review", "unmatched", "blocked")

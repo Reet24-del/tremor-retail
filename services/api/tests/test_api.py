@@ -93,3 +93,29 @@ def test_evaluation_passes_targets():
     assert rep["passed"], rep["metrics"]
     assert rep["metrics"]["recall"]["count"] == "5 of 5"
     assert rep["metrics"]["safety_violations"]["value"] == 0
+
+
+def test_csv_only_upload_finds_stock_gaps_and_asks_for_bills():
+    d = config.DEMO_DIR
+    files = [("sales_csv", ("sales_stock.csv", (d / "sales_stock.csv").read_bytes(), "text/csv"))]
+    run_id = client.post("/api/runs", files=files).json()["run_id"]
+    run = _wait(run_id)
+    assert run["status"] == "completed", run
+    assert run["summary"]["margin_check"] == "skipped_no_bills"
+    assert run["summary"]["bills_uploaded"] == 0
+    sigs = client.get(f"/api/runs/{run_id}/signals").json()["signals"]
+    by_product = {s["entity"]["id"]: s for s in sigs}
+    assert {s["signal_type"] for s in sigs} == {"inventory_discrepancy"}
+    assert "SKU-RICE-1K" in by_product and "SKU-OIL-1L" in by_product
+    rice = client.get(f"/api/signals/{by_product['SKU-RICE-1K']['signal_id']}").json()["signal"]
+    assert rice["facts"]["stock_variance_units"] == -20
+    assert rice["evidence_strength_components"]["source_corroboration"] == 0.5
+    assert any("sales and stock file alone" in lim for lim in rice["limitations"])
+
+    # Adding the bills later re-runs the same sales file and unlocks margin checks
+    bills = [("invoices", (n, (d / "invoices" / n).read_bytes(), "application/pdf")) for n in ("SW-151.pdf", "SW-184.pdf")]
+    new_id = client.post(f"/api/runs/{run_id}/invoices", files=bills).json()["run_id"]
+    new_run = _wait(new_id)
+    assert new_run["summary"]["margin_check"] == "done"
+    types = {(s["signal_type"], s["entity"]["id"]) for s in client.get(f"/api/runs/{new_id}/signals").json()["signals"]}
+    assert ("margin_leakage", "SKU-OIL-1L") in types

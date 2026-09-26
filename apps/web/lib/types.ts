@@ -28,6 +28,8 @@ export interface RunStatus {
     rejected_candidates?: number;
     amount_requiring_investigation?: number;
     extraction_methods?: string[];
+    bills_uploaded?: number;
+    margin_check?: "done" | "skipped_no_bills" | "needs_more_bills";
     llm_enabled?: boolean;
     matches?: Record<string, number>;
   };

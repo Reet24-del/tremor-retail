@@ -31,8 +31,23 @@ def start_demo():
     return {"run_id": run.run_id, "status": run.status.status, "stages": STAGES}
 
 
+async def _read_pdfs(files: list[UploadFile], errors: list[dict]) -> list[tuple[str, bytes]]:
+    pdfs = []
+    for f in files:
+        b = await f.read()
+        if not (f.filename or "").lower().endswith(".pdf") or not b.startswith(b"%PDF"):
+            errors.append({"file": f.filename, "error": "Not a PDF file"})
+            continue
+        if len(b) > config.MAX_UPLOAD_MB * 1024 * 1024:
+            errors.append({"file": f.filename, "error": f"File is larger than {config.MAX_UPLOAD_MB} MB"})
+            continue
+        pdfs.append((f.filename, b))
+    return pdfs
+
+
 @router.post("/runs")
-async def start_upload(sales_csv: UploadFile = File(...), invoices: list[UploadFile] = File(...)):
+async def start_upload(sales_csv: UploadFile = File(...), invoices: list[UploadFile] | None = File(None)):
+    """Supplier bills are optional: stock checks run on the sales file alone; margin checks need bills."""
     errors = []
     csv_bytes = await sales_csv.read()
     if len(csv_bytes) > config.MAX_UPLOAD_MB * 1024 * 1024:
@@ -42,18 +57,7 @@ async def start_upload(sales_csv: UploadFile = File(...), invoices: list[UploadF
     csv_check = load_sales_csv(csv_bytes)
     for e in csv_check.errors:
         errors.append({"file": sales_csv.filename, "error": e})
-    pdfs = []
-    for f in invoices:
-        b = await f.read()
-        if not (f.filename or "").lower().endswith(".pdf") or not b.startswith(b"%PDF"):
-            errors.append({"file": f.filename, "error": "Not a PDF file"})
-            continue
-        if len(b) > config.MAX_UPLOAD_MB * 1024 * 1024:
-            errors.append({"file": f.filename, "error": f"File is larger than {config.MAX_UPLOAD_MB} MB"})
-            continue
-        pdfs.append((f.filename, b))
-    if len(pdfs) < 2 and not any(e["error"] == "Not a PDF file" for e in errors):
-        errors.append({"file": None, "error": "Upload at least two supplier invoice PDFs so old and new costs can be compared"})
+    pdfs = await _read_pdfs(invoices or [], errors)
     if errors:
         raise HTTPException(422, {"errors": errors, "csv_summary": csv_check.summary, "warnings": csv_check.warnings})
     run = Run(
@@ -124,27 +128,49 @@ class MatchDecisions(BaseModel):
     decisions: dict[str, str | None]
 
 
-@router.post("/runs/{run_id}/matches")
-def confirm_matches(run_id: str, body: MatchDecisions):
-    """Store manual match decisions and re-run the analysis with them (new run id)."""
-    run = _run_or_404(run_id)
+def _inputs_from_run(run: dict) -> RunInputs:
+    """Rebuild the inputs of an earlier run from its stored source files."""
+    if run["mode"] == "demo":
+        return demo_inputs()
     rdir = repo.run_dir(run["run_id"])
     sources = repo.list_("sources", run["run_id"])
     csv_src = next(s for s in sources if s["type"] == "sales_csv")
     pdfs = [(s["filename"], (rdir / s["filename"]).read_bytes()) for s in sources if s["type"] == "invoice_pdf"]
-    if run["mode"] == "demo":
-        inp = demo_inputs()
-    else:
-        inp = RunInputs(
-            mode="upload",
-            csv_name=csv_src["filename"],
-            csv_bytes=(rdir / csv_src["filename"]).read_bytes(),
-            pdfs=pdfs,
-            store_name=run.get("store_name", "Your store"),
-        )
+    return RunInputs(
+        mode="upload",
+        csv_name=csv_src["filename"],
+        csv_bytes=(rdir / csv_src["filename"]).read_bytes(),
+        pdfs=pdfs,
+        store_name=run.get("store_name", "Your store"),
+    )
+
+
+@router.post("/runs/{run_id}/matches")
+def confirm_matches(run_id: str, body: MatchDecisions):
+    """Store manual match decisions and re-run the analysis with them (new run id)."""
+    inp = _inputs_from_run(_run_or_404(run_id))
     inp.manual_matches = body.decisions
     new = Run(inp).start_async()
     return {"run_id": new.run_id, "status": new.status.status}
+
+
+@router.post("/runs/{run_id}/invoices")
+async def add_invoices(run_id: str, invoices: list[UploadFile] = File(...)):
+    """Add supplier bills to an earlier analysis and re-run it with the same sales file (new run id)."""
+    run = _run_or_404(run_id)
+    if run["mode"] == "demo":
+        raise HTTPException(422, "The sample store already includes its supplier bills")
+    errors: list[dict] = []
+    new_pdfs = await _read_pdfs(invoices, errors)
+    if errors:
+        raise HTTPException(422, {"errors": errors})
+    if not new_pdfs:
+        raise HTTPException(422, {"errors": [{"file": None, "error": "Choose at least one supplier bill PDF"}]})
+    inp = _inputs_from_run(run)
+    existing = {name for name, _ in inp.pdfs}
+    inp.pdfs += [(name, b) for name, b in new_pdfs if name not in existing]
+    new = Run(inp).start_async()
+    return {"run_id": new.run_id, "status": new.status.status, "bills": len(inp.pdfs)}
 
 
 @router.get("/sources/{run_id}/{source_id}/page/{page}.png")

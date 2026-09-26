@@ -20,8 +20,11 @@ def validate(signal: dict, evidence: dict, facts: dict) -> tuple[Signal | None, 
         if any(e not in evidence for e in alt.evidence_ids):
             problems.append(f"rejected explanation '{alt.name}' has unresolved evidence")
     types = {evidence[e]["source_type"] for e in sig.evidence_ids if e in evidence}
-    if not ({"sales_csv", "invoice_pdf"} <= types):
-        problems.append(f"needs evidence from both the CSV and an invoice, got {sorted(types)}")
+    # Margin leakage needs a supplier bill (the cost) and the sales file (the price). A stock discrepancy can be
+    # proven from the sales and stock file alone; it is then labelled single-source with a lower evidence strength.
+    required = {"sales_csv", "invoice_pdf"} if sig.signal_type == "margin_leakage" else {"sales_csv"}
+    if not (required <= types):
+        problems.append(f"needs evidence from {sorted(required)}, got {sorted(types)}")
     if sig.signal_type == "margin_leakage" and (
         round(sig.financial_impact.amount, 2) != round(float(facts["estimated_margin_leakage"]), 2)
     ):

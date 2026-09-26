@@ -60,6 +60,8 @@ export const api = {
     req<{ run_id: string }>(`/api/runs/${runId}/matches`, {
       method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ decisions }),
     }),
+  addInvoices: (runId: string, form: FormData) =>
+    req<{ run_id: string }>(`/api/runs/${runId}/invoices`, { method: "POST", body: form }),
   runEvaluation: () => req<EvalReport>("/api/evaluation/demo", { method: "POST" }),
   latestEvaluation: () => req<EvalReport>("/api/evaluation/latest"),
 };

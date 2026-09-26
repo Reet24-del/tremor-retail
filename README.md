@@ -109,7 +109,7 @@ CI (`.github/workflows/ci.yml`) runs lint, format check, tests, the evaluation a
 
 ## 10. What works
 
-- Sample run and real uploads (CSV + at least 2 PDFs) with named validation errors
+- Sample run and real uploads: the sales and stock CSV alone checks stock; supplier bill PDFs are optional and unlock margin checks (Tremor asks for them only when a check needs them)
 - 7 visible processing stages, failed stage shown, never a silent empty result
 - Invoice extraction from the PDF text layer with page and bounding box
 - Product matching with pack-size blocking and a manual review/override path that re-runs analysis

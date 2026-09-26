@@ -140,6 +140,9 @@ class Signal(Strict):
     facts: dict[str, Any]
     ranking: dict[str, float]
     model_metadata: ModelMetadata
+    # Language code -> translated user-facing text (title, observation, interpretation, next_check,
+    # limitations, impact_label). Built from the same validated facts as the English text.
+    translations: dict[str, dict[str, Any]] = Field(default_factory=dict)
 
     @field_validator("next_check", "observation", "interpretation", "title")
     @classmethod

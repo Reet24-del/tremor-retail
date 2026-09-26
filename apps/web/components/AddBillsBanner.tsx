@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { api, ApiError } from "@/lib/api";
+import { useLang } from "@/lib/i18n";
 import { useRun } from "@/lib/run-context";
 
 /**
@@ -12,6 +13,7 @@ import { useRun } from "@/lib/run-context";
 export default function AddBillsBanner() {
   const { run, setRunId } = useRun();
   const router = useRouter();
+  const { t } = useLang();
   const input = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -22,7 +24,7 @@ export default function AddBillsBanner() {
   const upload = async (files: File[]) => {
     const pdfs = files.filter((f) => f.name.toLowerCase().endsWith(".pdf"));
     if (!pdfs.length) {
-      setErr("Choose supplier bill PDFs.");
+      setErr(t("bills.choosePdf"));
       return;
     }
     setBusy(true);
@@ -49,14 +51,14 @@ export default function AddBillsBanner() {
       <div className="row between">
         <div style={{ maxWidth: 680 }}>
           <strong>
-            {check === "skipped_no_bills" ? "Margin checks need supplier bills." : "Add one more supplier bill to compare costs."}
+            {check === "skipped_no_bills" ? t("bills.noBillsH") : t("bills.moreH")}
           </strong>{" "}
           {check === "skipped_no_bills"
-            ? "Stock was checked from your sales file alone. To see whether rising supplier costs are eating into your margin, add the bills from your suppliers."
-            : "Tremor needs bills from at least two dates to see whether a supplier raised a price."}
+            ? t("bills.noBillsP")
+            : t("bills.moreP")}
         </div>
         <button className="btn btn-primary" onClick={() => input.current?.click()} disabled={busy}>
-          {busy ? "Adding bills…" : "Add supplier bills"}
+          {busy ? t("bills.adding") : t("bills.add")}
         </button>
         <input ref={input} type="file" hidden multiple accept="application/pdf,.pdf"
           onChange={(e) => upload(Array.from(e.target.files ?? []))} />

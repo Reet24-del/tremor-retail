@@ -60,6 +60,17 @@ export interface SignalSummary {
     explanation_source: "llm" | "template";
     extraction_method: string;
   };
+  /** Language code -> translated text built by the API from the same validated facts. */
+  translations?: Record<string, SignalTranslation>;
+}
+
+export interface SignalTranslation {
+  title?: string;
+  observation?: string;
+  impact_label?: string;
+  interpretation?: string;
+  next_check?: string;
+  limitations?: string[];
 }
 
 export interface RejectedExplanation {

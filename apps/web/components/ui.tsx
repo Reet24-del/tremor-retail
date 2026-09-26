@@ -2,21 +2,31 @@
 
 import { strengthLabel, titleCase } from "@/lib/format";
 import type { Severity, SignalStatus } from "@/lib/types";
-import { STAGE_LABELS, STAGES } from "@/lib/types";
+import { STAGES } from "@/lib/types";
+import { type Key, useLang } from "@/lib/i18n";
 
 export function SeverityBadge({ s }: { s: Severity }) {
+  const { t } = useLang();
   const icon = s === "high" ? "▲" : s === "medium" ? "■" : "●";
-  return <span className={`badge badge-${s}`}><span aria-hidden="true">{icon}</span>{titleCase(s)} severity</span>;
+  return <span className={`badge badge-${s}`}><span aria-hidden="true">{icon}</span>{t(`sev.${s}` as Key)}</span>;
 }
 
 export function StatusBadge({ s }: { s: SignalStatus }) {
   const cls = s === "confirmed" ? "badge-accent" : s === "dismissed" ? "badge-neutral" : s === "new" ? "badge-accent" : "badge-neutral";
-  const label = s === "confirmed" ? "Confirmed for investigation" : titleCase(s);
+  const { t } = useLang();
+  const label = t(`status.${s}` as Key) || titleCase(s);
   return <span className={`badge ${cls}`}>{label}</span>;
 }
 
+const STRENGTH_HI: Record<string, string> = {
+  "Strong evidence": "मज़बूत सबूत",
+  "Moderate evidence": "ठीक-ठाक सबूत",
+  "Limited evidence": "कम सबूत",
+};
 export function StrengthBadge({ v }: { v: number }) {
-  return <span className="badge badge-neutral" title={`Evidence strength ${Math.round(v * 100)}% (how well the data supports the observation, not a probability of loss)`}>{strengthLabel(v)}</span>;
+  const { lang } = useLang();
+  const label = strengthLabel(v);
+  return <span className="badge badge-neutral" title={`Evidence strength ${Math.round(v * 100)}% (how well the data supports the observation, not a probability of loss)`}>{lang === "hi" ? STRENGTH_HI[label] : label}</span>;
 }
 
 const SRC: Record<string, [string, string]> = {
@@ -46,6 +56,7 @@ export function Loading({ label = "Loading" }: { label?: string }) {
 }
 
 export function ProcessingTimeline({ current, completed, failed }: { current: string | null; completed: string[]; failed?: string | null }) {
+  const { t } = useLang();
   return (
     <ol className="timeline" aria-label="Processing stages">
       {STAGES.map((s, i) => {
@@ -58,8 +69,8 @@ export function ProcessingTimeline({ current, completed, failed }: { current: st
               {done ? "✓" : isFailed ? "!" : i + 1}
             </span>
             <span style={{ color: done || active ? "var(--text)" : "var(--text-3)", fontWeight: active ? 600 : 400 }}>
-              {STAGE_LABELS[s]}
-              <span className="faint"> {done ? "done" : isFailed ? "failed" : active ? "in progress" : "waiting"}</span>
+              {t(`stage.${s}` as Key)}
+              <span className="faint"> {t(done ? "stage.done" : isFailed ? "stage.failed" : active ? "stage.active" : "stage.waiting")}</span>
             </span>
           </li>
         );

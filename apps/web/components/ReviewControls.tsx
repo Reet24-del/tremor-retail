@@ -3,12 +3,15 @@
 import { useState } from "react";
 import { api } from "@/lib/api";
 import { dateTime, titleCase } from "@/lib/format";
+import { useLang } from "@/lib/i18n";
 import type { Review } from "@/lib/types";
 
 const DISMISS_REASONS = ["Expected promotion", "Damaged stock already known", "Incorrect product match", "Data error"];
 
 export default function ReviewControls({ signalId, reviews, onSaved }: { signalId: string; reviews: Review[]; onSaved: () => void }) {
   const [outcome, setOutcome] = useState<Review["outcome"]>("confirmed");
+  const { lang } = useLang();
+  const L = (en: string, hi: string) => (lang === "hi" ? hi : en);
   const [reason, setReason] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -37,7 +40,7 @@ export default function ReviewControls({ signalId, reviews, onSaved }: { signalI
       <div className="seg" role="group" aria-label="Review outcome">
         {(["confirmed", "dismissed", "unresolved"] as const).map((o) => (
           <button key={o} aria-pressed={outcome === o} onClick={() => setOutcome(o)}>
-            {o === "confirmed" ? "Confirm for investigation" : o === "dismissed" ? "Dismiss" : "Leave unresolved"}
+            {o === "confirmed" ? L("Confirm for investigation", "जाँच के लिए पक्का करें") : o === "dismissed" ? L("Dismiss", "खारिज करें") : L("Leave unresolved", "अभी अनसुलझा छोड़ें")}
           </button>
         ))}
       </div>
@@ -47,14 +50,14 @@ export default function ReviewControls({ signalId, reviews, onSaved }: { signalI
         </div>
       )}
       <div className="field">
-        <label htmlFor="reason">Reason {needsReason ? "(required)" : "(optional)"}</label>
+        <label htmlFor="reason">{L("Reason", "कारण")} {needsReason ? L("(required)", "(ज़रूरी)") : L("(optional)", "(वैकल्पिक)")}</label>
         <textarea id="reason" rows={2} value={reason} onChange={(e) => setReason(e.target.value)}
-          placeholder={outcome === "confirmed" ? "e.g. Supplier rate checked with Shakti Wholesale" : "Why?"} />
+          placeholder={outcome === "confirmed" ? L("e.g. Supplier rate checked with Shakti Wholesale", "जैसे: Shakti Wholesale से सप्लायर रेट पक्का किया") : L("Why?", "क्यों?")} />
       </div>
       {err && <div className="alert alert-error">{err}</div>}
       <div className="row between">
-        <span className="faint">Confirm means “worth investigating”, not proven loss. Reviews never change your records.</span>
-        <button className="btn btn-primary" onClick={save} disabled={busy}>{busy ? "Saving…" : "Save review"}</button>
+        <span className="faint">{L("Confirm means “worth investigating”, not proven loss. Reviews never change your records.", "पक्का करने का मतलब है “जाँच लायक”, नुकसान साबित होना नहीं। समीक्षा आपके रिकॉर्ड कभी नहीं बदलती।")}</span>
+        <button className="btn btn-primary" onClick={save} disabled={busy}>{busy ? L("Saving…", "सेव हो रहा है…") : L("Save review", "समीक्षा सेव करें")}</button>
       </div>
       {reviews.length > 0 && (
         <div>

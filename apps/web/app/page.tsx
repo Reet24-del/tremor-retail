@@ -1,30 +1,99 @@
 "use client";
 
 import Link from "next/link";
-import AddBillsBanner from "@/components/AddBillsBanner";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import EvaluationPanel from "@/components/EvaluationPanel";
-import SignalCard from "@/components/SignalCard";
-import { Loading, PageHead, ProcessingTimeline } from "@/components/ui";
+import RupeeCoin from "@/components/RupeeCoin";
+import { Wordmark } from "@/components/AppShell";
 import { api } from "@/lib/api";
-import { date, inr, num } from "@/lib/format";
+import { LangToggle, useLang } from "@/lib/i18n";
 import { useRun } from "@/lib/run-context";
-import type { SignalSummary } from "@/lib/types";
 
-export default function Overview() {
-  const { run, loading, setRunId } = useRun();
+/*
+ * Landing page. Short on purpose: one headline, one sentence, one action. The EN / हिंदी toggle
+ * switches the whole page; a single line in the other language sits under the headline so both
+ * audiences know the product speaks their language.
+ *
+ * Proof numbers come from the stress test (docs/stress-test.md) and the bundled demo store.
+ */
+const COPY = {
+  en: {
+    eyebrow: "Profit-leakage intelligence for kirana stores",
+    h1a: "Find the rupees your shop is ",
+    h1b: "quietly losing.",
+    alt: "आपकी दुकान का छुपा हुआ नुकसान, सबूत के साथ।",
+    lede: "Upload your sales file. Tremor finds where margin and stock slip away and shows the exact row behind every number.",
+    run: "Run the sample store",
+    starting: "Starting…",
+    upload: "Upload my files",
+    open: "Open app",
+    proof: [
+      ["98.5%", "recall on 50 random test stores"],
+      ["98.0%", "precision on the same stores"],
+      ["₹5,495", "flagged in the demo store, with proof"],
+    ],
+    featH: "Leads you can check in five minutes. Never accusations.",
+    feats: [
+      ["₹", "Stock that does not add up", "Your sales and stock CSV alone is enough to spot units that go missing.", "CSV only"],
+      ["↗", "Costs eating your margin", "Add supplier bills and Tremor catches price rises you did not pass on.", "Bills optional"],
+      ["✓", "Proof for every number", "Every figure links to the CSV row or bill line it came from. In English or Hindi.", "EN · हिंदी"],
+    ],
+    ctaH: "See it on a real-looking store",
+    ctaP: "90 days of synthetic grocery data. Results in under a minute.",
+    foot: "Team Three Musketeers · Hack-e-Awadh 2026",
+    synthetic: "Demo numbers are synthetic",
+  },
+  hi: {
+    eyebrow: "किराना दुकानों के लिए मुनाफ़े की जाँच",
+    h1a: "आपकी दुकान का जो मुनाफ़ा ",
+    h1b: "चुपचाप रिस रहा है, उसे पकड़िए।",
+    alt: "Find the rupees your shop is quietly losing.",
+    lede: "अपनी सेल्स फ़ाइल अपलोड करें। Tremor बताता है कि मार्जिन और स्टॉक कहाँ घट रहा है, और हर आँकड़े के पीछे की पंक्ति दिखाता है।",
+    run: "सैंपल दुकान चलाएँ",
+    starting: "शुरू हो रहा है…",
+    upload: "अपनी फ़ाइलें अपलोड करें",
+    open: "ऐप खोलें",
+    proof: [
+      ["98.5%", "50 रैंडम टेस्ट दुकानों पर रिकॉल"],
+      ["98.0%", "उन्हीं दुकानों पर प्रिसिज़न"],
+      ["₹5,495", "डेमो दुकान में सबूत के साथ पकड़ा गया"],
+    ],
+    featH: "ऐसे सुराग जिन्हें आप पाँच मिनट में जाँच सकें। कभी इल्ज़ाम नहीं।",
+    feats: [
+      ["₹", "स्टॉक जो मेल नहीं खाता", "गायब होते यूनिट पकड़ने के लिए सिर्फ़ आपकी सेल्स और स्टॉक CSV काफ़ी है।", "सिर्फ़ CSV"],
+      ["↗", "मार्जिन खाती लागत", "सप्लायर के बिल जोड़ें, Tremor वो बढ़े दाम पकड़ेगा जो आपने आगे नहीं बढ़ाए।", "बिल वैकल्पिक"],
+      ["✓", "हर आँकड़े का सबूत", "हर संख्या उस CSV पंक्ति या बिल लाइन से जुड़ी है जहाँ से वह आई। हिंदी या अंग्रेज़ी में।", "EN · हिंदी"],
+    ],
+    ctaH: "असली जैसी दुकान पर देखें",
+    ctaP: "90 दिन का सिंथेटिक किराना डेटा। एक मिनट से कम में नतीजे।",
+    foot: "Team Three Musketeers · Hack-e-Awadh 2026",
+    synthetic: "डेमो के आँकड़े सिंथेटिक हैं",
+  },
+} as const;
+
+function useReveal() {
+  useEffect(() => {
+    const els = Array.from(document.querySelectorAll<HTMLElement>(".reveal"));
+    if (!("IntersectionObserver" in window)) {
+      els.forEach((e) => e.classList.add("in"));
+      return;
+    }
+    const io = new IntersectionObserver((entries) => entries.forEach((en) => en.isIntersecting && en.target.classList.add("in")),
+      { rootMargin: "0px 0px -8% 0px" });
+    els.forEach((e) => io.observe(e));
+    return () => io.disconnect();
+  }, []);
+}
+
+export default function Landing() {
   const router = useRouter();
+  const { setRunId } = useRun();
+  const { lang } = useLang();
+  const c = COPY[lang];
+  const other = lang === "en" ? "hi" : "en";
   const [starting, setStarting] = useState(false);
   const [err, setErr] = useState<string | null>(null);
-  const [loaded, setLoaded] = useState<{ runId: string; signals: SignalSummary[] } | null>(null);
-
-  useEffect(() => {
-    if (run?.status !== "completed") return;
-    const id = run.run_id;
-    api.signals(id).then((r) => setLoaded({ runId: id, signals: r.signals })).catch(() => setLoaded({ runId: id, signals: [] }));
-  }, [run?.run_id, run?.status]);
-  const signals = run?.status === "completed" && loaded?.runId === run.run_id ? loaded.signals : null;
+  useReveal();
 
   const startDemo = async () => {
     setStarting(true);
@@ -35,103 +104,77 @@ export default function Overview() {
       router.push(`/runs/${r.run_id}`);
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Could not start the sample run");
-    } finally {
       setStarting(false);
     }
   };
 
-  const s = run?.status === "completed" ? run.summary : null;
-  const open = signals?.filter((x) => x.status !== "dismissed") ?? [];
-  const amount = open.reduce((a, x) => a + x.financial_impact.amount, 0);
-
   return (
-    <main className="page">
-      <PageHead title="Overview"
-        desc="Tremor reads your sales and stock file together with supplier bills, finds where profit may be leaking and shows the proof for every finding. It never takes an action for you." />
-
-      <section className="card card-pad" style={{ marginBottom: 16 }}>
-        <div className="row between">
-          <div style={{ maxWidth: 620 }}>
-            <h2>Start an analysis</h2>
-            <p className="muted" style={{ marginTop: 4 }}>
-              Start with your sales and stock CSV. Supplier bills are optional: add them to also check whether rising costs are eating your margin.
-              The sample store runs instantly with synthetic data.
-            </p>
-          </div>
+    <div className="landing">
+      <nav className="l-nav" aria-label="Site">
+        <div className="l-wrap l-nav-in">
+          <Wordmark />
           <div className="row">
-            <button className="btn btn-primary btn-lg" onClick={startDemo} disabled={starting || run?.status === "running"}>
-              {starting ? "Starting…" : "Run sample grocery store"}
-            </button>
-            <Link className="btn btn-lg" href="/upload">Upload my files</Link>
+            <LangToggle compact />
+            <Link className="btn btn-sm" href="/dashboard">{c.open}</Link>
           </div>
         </div>
-        {err && <div className="alert alert-error" style={{ marginTop: 12 }}>{err}</div>}
+      </nav>
+
+      <header className="hero">
+        <div className="hero-glow" />
+        <div className="hero-grid" />
+        <div className="l-wrap hero-in">
+          <div>
+            <span className="eyebrow"><i aria-hidden="true" />{c.eyebrow}</span>
+            <h1>{c.h1a}<em>{c.h1b}</em></h1>
+            <p className="tagline-alt" lang={other}>{c.alt}</p>
+            <p className="lede">{c.lede}</p>
+            <div className="hero-cta">
+              <button className="btn btn-primary btn-lg" onClick={startDemo} disabled={starting}>{starting ? c.starting : c.run}</button>
+              <Link className="btn btn-lg" href="/upload">{c.upload}</Link>
+            </div>
+            {err && <div className="alert alert-error" style={{ marginTop: 14, maxWidth: 500 }}>{err}</div>}
+          </div>
+          <RupeeCoin />
+        </div>
+      </header>
+
+      <section className="proof" aria-label="Results">
+        <div className="l-wrap proof-in">
+          {c.proof.map(([n, label]) => (
+            <div key={label} className="proof-item reveal"><b>{n}</b><span>{label}</span></div>
+          ))}
+        </div>
       </section>
 
-      <AddBillsBanner />
-      <div className="grid grid-4" style={{ marginBottom: 16 }}>
-        <div className="card card-pad">
-          <div className="stat-label">Records analysed</div>
-          <div className="stat-value">{s ? num(s.records_analysed) : "—"}</div>
-          <div className="stat-sub">{s ? `${s.products} products, ${date(s.date_from)} to ${date(s.date_to)}` : "Run an analysis to see this"}</div>
+      <section className="features l-wrap" aria-labelledby="feat-h">
+        <h2 id="feat-h" className="reveal">{c.featH}</h2>
+        <div className="feature-grid">
+          {c.feats.map(([icon, h, p, tag]) => (
+            <article key={h} className="feature reveal">
+              <div className="feature-icon" aria-hidden="true">{icon}</div>
+              <h3>{h}</h3>
+              <p>{p}</p>
+              <span className="tag">{tag}</span>
+            </article>
+          ))}
         </div>
-        <div className="card card-pad">
-          <div className="stat-label">Supplier invoices read</div>
-          <div className="stat-value">{s ? num(s.invoices_read) : "—"}</div>
-          <div className="stat-sub">{s ? `${s.invoice_lines} line items · ${s.extraction_methods?.join(", ")} extraction` : "PDF bills with page references"}</div>
-        </div>
-        <div className="card card-pad">
-          <div className="stat-label">Signals requiring review</div>
-          <div className="stat-value">{signals ? open.filter((x) => x.status === "new" || x.status === "unresolved").length : "—"}</div>
-          <div className="stat-sub">{s ? `${s.rejected_candidates} candidates rejected with a reason` : "Evidence-backed findings only"}</div>
-        </div>
-        <div className="card card-pad">
-          <div className="stat-label">Amount requiring investigation</div>
-          <div className="stat-value">{signals ? inr(amount) : "—"}</div>
-          <div className="stat-sub">Estimate across open signals, not an accounting loss</div>
-        </div>
-      </div>
+      </section>
 
-      {loading ? <Loading label="Loading latest run" /> : run?.status === "running" ? (
-        <section className="card card-pad">
-          <h2 style={{ marginBottom: 12 }}>Analysis in progress</h2>
-          <ProcessingTimeline current={run.current_stage} completed={run.completed_stages} />
-        </section>
-      ) : run?.status === "failed" ? (
-        <section className="card card-pad stack">
-          <h2>The last run failed</h2>
-          <div className="alert alert-error">{run.error}</div>
-          <ProcessingTimeline current={run.current_stage} completed={run.completed_stages} failed={run.failed_stage} />
-        </section>
-      ) : signals && signals.length > 0 ? (
-        <section className="card" style={{ marginBottom: 16 }}>
-          <div className="card-head">
-            <h2>Top signals</h2>
-            <Link href="/signals">View all {signals.length}</Link>
+      <section className="cta-band l-wrap">
+        <div className="cta-card reveal">
+          <div>
+            <h2>{c.ctaH}</h2>
+            <p>{c.ctaP}</p>
           </div>
-          {signals.slice(0, 3).map((x) => <SignalCard key={x.signal_id} s={x} />)}
-        </section>
-      ) : signals ? (
-        <section className="card empty">
-          <h3>No signals in the reviewed period</h3>
-          <p>Tremor checked {s?.records_analysed} records and {s?.invoices_read} invoices from {date(s?.date_from)} to {date(s?.date_to)}.
-            That does not prove there is no risk.</p>
-        </section>
-      ) : (
-        <section className="card empty">
-          <h3>No analysis yet</h3>
-          <p>Run the sample grocery store to see a complete example in under a minute.</p>
-        </section>
-      )}
-
-      {run?.status === "completed" && run.warnings.length > 0 && (
-        <div className="alert alert-warn" style={{ marginBottom: 16 }}>
-          <strong>Notes from this run:</strong>
-          <ul style={{ margin: "6px 0 0", paddingLeft: 18 }}>{run.warnings.slice(0, 6).map((w, i) => <li key={i}>{w}</li>)}</ul>
+          <button className="btn btn-primary btn-lg" onClick={startDemo} disabled={starting}>{starting ? c.starting : c.run}</button>
         </div>
-      )}
+      </section>
 
-      <EvaluationPanel />
-    </main>
+      <footer className="l-wrap l-foot row between">
+        <span>{c.foot}</span>
+        <span>{c.synthetic}</span>
+      </footer>
+    </div>
   );
 }

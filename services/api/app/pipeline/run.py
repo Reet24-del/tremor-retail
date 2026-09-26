@@ -19,6 +19,7 @@ from . import llm
 from .correlate import build_signal_drafts
 from .detect import detect
 from .explain import explain, severity_for
+from .explain_hi import translate_hi
 from .features import Purchase, build_features
 from .ingest import load_sales_csv
 from .invoice_extract import extract_invoice
@@ -303,6 +304,8 @@ class Run:
                     "Checked from the sales and stock file alone: deliveries were inferred from stock increases. "
                     "Add this supplier's bills to confirm."
                 )
+            hindi, hi_notes = translate_hi(c.candidate_type, facts, limitations, impact["label"])
+            self.status.warnings.extend(f"{f.product_name}: {n}" for n in hi_notes)
             sig = {
                 "signal_id": d["signal_id"],
                 "run_id": rid,
@@ -326,6 +329,7 @@ class Run:
                     "explanation_source": source,
                     "extraction_method": ",".join(sorted(methods)),
                 },
+                "translations": {"hi": hindi} if hindi else {},
             }
             ok, problems = validate(sig, evidence, facts)
             if ok is None:

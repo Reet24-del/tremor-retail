@@ -6,6 +6,7 @@ import { useRef, useState } from "react";
 import { PageHead } from "@/components/ui";
 import { api, ApiError, sampleCsvUrl } from "@/lib/api";
 import { date, num } from "@/lib/format";
+import { useLang } from "@/lib/i18n";
 import { useRun } from "@/lib/run-context";
 
 type CsvCheck = { ok: boolean; errors: string[]; warnings: string[]; summary: Record<string, unknown> };
@@ -28,6 +29,7 @@ function Drop({ accept, multiple, label, hint, onFiles }: { accept: string; mult
 export default function UploadPage() {
   const router = useRouter();
   const { setRunId } = useRun();
+  const { t } = useLang();
   const [csv, setCsv] = useState<File | null>(null);
   const [check, setCheck] = useState<CsvCheck | null>(null);
   const [pdfs, setPdfs] = useState<File[]>([]);
@@ -50,7 +52,7 @@ export default function UploadPage() {
 
   const addPdfs = (files: File[]) => {
     const rejected = files.filter((f) => !f.name.toLowerCase().endsWith(".pdf") || f.size > 10 * 1024 * 1024);
-    setErrors(rejected.map((f) => `${f.name}: must be a PDF under 10 MB`));
+    setErrors(rejected.map((f) => t("up.pdfBad", { f: f.name })));
     const ok = files.filter((f) => !rejected.includes(f));
     setPdfs((prev) => [...prev.filter((p) => !ok.some((o) => o.name === p.name)), ...ok]);
   };
@@ -81,41 +83,41 @@ export default function UploadPage() {
 
   return (
     <main className="page">
-      <PageHead title="Upload my files" crumbs={<><Link href="/">Overview</Link> / Upload</>}
-        desc="Your sales and stock CSV is enough to find stock that does not add up. Supplier bills are optional and unlock margin checks. Files are only used for this analysis; Tremor never changes your records." />
+      <PageHead title={t("up.title")} crumbs={<><Link href="/dashboard">{t("nav.overview")}</Link> / {t("up.title")}</>}
+        desc={t("up.desc")} />
       <div className="grid grid-2">
         <section className="card card-pad stack">
-          <div className="row between"><h2>1. Sales and stock CSV</h2><a href={sampleCsvUrl} download>Download example CSV</a></div>
-          <p className="faint">Required columns: transaction_id, transaction_date, product_id, product_name, quantity_sold, unit_selling_price, opening_stock, closing_stock. Optional: recorded_damage, recorded_returns.</p>
-          <Drop accept=".csv,text/csv" label={csv ? `Selected: ${csv.name}` : "Choose or drop a CSV"} hint="CSV, up to 10 MB" onFiles={pickCsv} />
-          {csv && !check && <p className="faint" role="status">Checking columns and rows…</p>}
+          <div className="row between"><h2>{t("up.csvH")}</h2><a href={sampleCsvUrl} download>{t("up.example")}</a></div>
+          <p className="faint">{t("up.columns")}</p>
+          <Drop accept=".csv,text/csv" label={csv ? t("up.selected", { f: csv.name }) : t("up.chooseCsv")} hint={t("up.csvHint")} onFiles={pickCsv} />
+          {csv && !check && <p className="faint" role="status">{t("up.checking")}</p>}
           {check && check.ok && (
             <div className="alert alert-info">
-              <strong>Looks good.</strong> {num(Number(check.summary.row_count))} rows · {String(check.summary.product_count)} products · {date(String(check.summary.date_from))} to {date(String(check.summary.date_to))} · INR
-              <div className="faint" style={{ marginTop: 4 }}>Columns: {(check.summary.columns as string[] | undefined)?.join(", ")}</div>
+              <strong>{t("up.good")}</strong> {t("up.rowsSummary", { r: num(Number(check.summary.row_count)), p: String(check.summary.product_count), a: date(String(check.summary.date_from)), b: date(String(check.summary.date_to)) })}
+              <div className="faint" style={{ marginTop: 4 }}>{t("up.columnsFound")} {(check.summary.columns as string[] | undefined)?.join(", ")}</div>
             </div>
           )}
           {check && check.errors.length > 0 && (
-            <div className="alert alert-error"><strong>Fix these before continuing:</strong>
+            <div className="alert alert-error"><strong>{t("up.fix")}</strong>
               <ul style={{ margin: "4px 0 0", paddingLeft: 18 }}>{check.errors.map((e) => <li key={e}>{e}</li>)}</ul></div>
           )}
           {check && check.warnings.length > 0 && <div className="alert alert-warn">{check.warnings.join(" · ")}</div>}
         </section>
 
         <section className="card card-pad stack">
-          <h2>2. Supplier bills <span className="faint" style={{ fontWeight: 400 }}>(optional)</span></h2>
-          <p className="faint">Add bills to check margins. Bills from at least two dates let Tremor compare an older cost with the latest one. You can also add them later. Digital PDFs work best.</p>
-          <Drop accept="application/pdf,.pdf" multiple label="Choose or drop invoice PDFs" hint="PDF, up to 10 MB each" onFiles={addPdfs} />
+          <h2>{t("up.billsH")} <span className="faint" style={{ fontWeight: 400 }}>{t("up.optional")}</span></h2>
+          <p className="faint">{t("up.billsP")}</p>
+          <Drop accept="application/pdf,.pdf" multiple label={t("up.choosePdf")} hint={t("up.pdfHint")} onFiles={addPdfs} />
           {pdfs.length > 0 && (
             <ul className="file-list">
               {pdfs.map((p) => (
                 <li key={p.name}><span>{p.name} <span className="faint">{(p.size / 1024).toFixed(0)} KB</span></span>
-                  <button className="btn btn-sm" onClick={() => setPdfs(pdfs.filter((x) => x !== p))} aria-label={`Remove ${p.name}`}>Remove</button></li>
+                  <button className="btn btn-sm" onClick={() => setPdfs(pdfs.filter((x) => x !== p))} aria-label={`${t("up.remove")} ${p.name}`}>{t("up.remove")}</button></li>
               ))}
             </ul>
           )}
-          {pdfs.length === 0 && <p className="faint">No bills: Tremor will check stock only and ask for bills if it needs them.</p>}
-          {pdfs.length === 1 && <div className="alert alert-warn">One bill gives no earlier cost to compare with. Add another from a different date to check margins.</div>}
+          {pdfs.length === 0 && <p className="faint">{t("up.noBills")}</p>}
+          {pdfs.length === 1 && <div className="alert alert-warn">{t("up.oneBill")}</div>}
         </section>
       </div>
       {errors.length > 0 && (
@@ -124,8 +126,8 @@ export default function UploadPage() {
         </div>
       )}
       <div className="row" style={{ marginTop: 16 }}>
-        <button className="btn btn-primary btn-lg" disabled={!canStart} onClick={start}>{busy ? "Uploading…" : pdfs.length ? "Start analysis" : "Check stock now"}</button>
-        <span className="faint">No automatic action will happen. You review every finding.</span>
+        <button className="btn btn-primary btn-lg" disabled={!canStart} onClick={start}>{busy ? t("up.uploading") : pdfs.length ? t("up.start") : t("up.stockOnly")}</button>
+        <span className="faint">{t("up.noAuto")}</span>
       </div>
     </main>
   );

@@ -5,11 +5,14 @@ import { useEffect, useState } from "react";
 import { Loading, PageHead, SeverityBadge } from "@/components/ui";
 import { api } from "@/lib/api";
 import { dateTime, inr, titleCase } from "@/lib/format";
+import { useLang } from "@/lib/i18n";
 import { useRun } from "@/lib/run-context";
 import type { Review } from "@/lib/types";
 
 export default function ReviewsPage() {
   const { run, loading } = useRun();
+  const { lang } = useLang();
+  const L = (en: string, hi: string) => (lang === "hi" ? hi : en);
   const [reviews, setReviews] = useState<Review[] | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
@@ -23,9 +26,9 @@ export default function ReviewsPage() {
 
   return (
     <main className="page">
-      <PageHead title="Reviews" desc="Your decisions on signals in the current run. Reviews record judgement only; they never change source data or trigger an action." />
+      <PageHead title={L("Reviews", "समीक्षा")} desc={L("Your decisions on signals in the current run. Reviews record judgement only; they never change source data or trigger an action.", "इस जाँच के संकेतों पर आपके फ़ैसले। समीक्षा सिर्फ़ आपकी राय दर्ज करती है; यह डेटा नहीं बदलती और कोई कदम नहीं उठाती।")} />
       {err && <div className="alert alert-error">{err}</div>}
-      {!run ? <div className="card empty"><h3>No analysis yet</h3><p>Start from the <Link href="/">Overview</Link>.</p></div>
+      {!run ? <div className="card empty"><h3>{L("No analysis yet", "अभी कोई जाँच नहीं")}</h3><p><Link href="/dashboard">{L("Start from the Overview", "डैशबोर्ड से शुरू करें")}</Link>.</p></div>
         : !reviews ? <Loading label="Loading reviews" /> : (
           <div className="stack">
             <div className="row">
@@ -35,7 +38,7 @@ export default function ReviewsPage() {
             </div>
             <section className="card">
               {reviews.length === 0 ? (
-                <div className="empty"><h3>No reviews yet</h3><p>Open a <Link href="/signals">signal</Link> and confirm, dismiss or leave it unresolved.</p></div>
+                <div className="empty"><h3>{L("No reviews yet", "अभी कोई समीक्षा नहीं")}</h3><p>Open a <Link href="/signals">signal</Link> and confirm, dismiss or leave it unresolved.</p></div>
               ) : (
                 <div className="table-wrap" style={{ maxHeight: "none" }}>
                   <table>

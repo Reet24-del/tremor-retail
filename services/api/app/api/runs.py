@@ -99,7 +99,16 @@ def list_signals(run_id: str):
     return {
         "run_id": run["run_id"],
         "run_status": run["status"],
-        "signals": [{k: s[k] for k in summary_keys} for s in sigs],
+        "signals": [
+            {
+                **{k: s[k] for k in summary_keys},
+                "translations": {
+                    lang: {k: t[k] for k in ("title", "observation", "impact_label") if k in t}
+                    for lang, t in s.get("translations", {}).items()
+                },
+            }
+            for s in sigs
+        ],
         "rejected_candidates": repo.list_("candidates", run["run_id"]),
     }
 

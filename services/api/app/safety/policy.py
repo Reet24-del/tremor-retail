@@ -22,6 +22,16 @@ PROHIBITED = [
     r"\bapprove (the )?loan",
     r"\btransfer (the )?money",
     r"\bguaranteed\b",
+    # Hindi equivalents: the same accusation and instruction rules apply to Hindi text.
+    "चोरी",
+    "चोर",
+    "धोखाधड़ी",
+    "धोखा",
+    "घोटाला",
+    "गबन",
+    "नौकरी से निकाल",
+    "उधार बंद",
+    "गारंटी",
 ]
 _PROHIBITED_RE = re.compile("|".join(PROHIBITED), re.I)
 

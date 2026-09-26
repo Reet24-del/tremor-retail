@@ -6,11 +6,14 @@ import { useEffect, useState } from "react";
 import { Loading, PageHead, SourceBadge } from "@/components/ui";
 import { api } from "@/lib/api";
 import { date, num, titleCase } from "@/lib/format";
+import { useLang } from "@/lib/i18n";
 import { useRun } from "@/lib/run-context";
 import type { ProductMatch, Source } from "@/lib/types";
 
 export default function SourcesPage() {
   const { run, loading, setRunId } = useRun();
+  const { lang } = useLang();
+  const L = (en: string, hi: string) => (lang === "hi" ? hi : en);
   const router = useRouter();
   const [data, setData] = useState<{ sources: Source[]; matches: ProductMatch[] } | null>(null);
   const [err, setErr] = useState<string | null>(null);
@@ -23,7 +26,7 @@ export default function SourcesPage() {
   }, [run?.run_id, run?.status, run]);
 
   if (loading) return <main className="page"><Loading /></main>;
-  if (!run) return <main className="page"><PageHead title="Data sources" /><div className="card empty"><h3>No files yet</h3><p>Run the sample store or <Link href="/upload">upload your files</Link>.</p></div></main>;
+  if (!run) return <main className="page"><PageHead title={L("Data sources", "डेटा स्रोत")} /><div className="card empty"><h3>{L("No files yet", "अभी कोई फ़ाइल नहीं")}</h3><p>Run the sample store or <Link href="/upload">upload your files</Link>.</p></div></main>;
 
   const review = data?.matches.filter((m) => m.status === "needs_review") ?? [];
   const products = Array.from(new Map((data?.matches ?? []).filter((m) => m.product_id).map((m) => [m.product_id!, m.product_name!])).entries());
@@ -43,13 +46,13 @@ export default function SourcesPage() {
 
   return (
     <main className="page">
-      <PageHead title="Data sources"
-        desc="Every file used in the current run, what Tremor read from it and how invoice lines were connected to your products." />
+      <PageHead title={L("Data sources", "डेटा स्रोत")}
+        desc={L("Every file used in the current run, what Tremor read from it and how invoice lines were connected to your products.", "इस जाँच में इस्तेमाल हुई हर फ़ाइल, Tremor ने उससे क्या पढ़ा और बिल की लाइनें आपके प्रोडक्ट से कैसे जोड़ी गईं।")} />
       {err && <div className="alert alert-error">{err}</div>}
       {!data ? <Loading label="Loading sources" /> : (
         <div className="stack">
           <section className="card">
-            <div className="card-head"><h2>Files</h2><span className="faint">Run {run.run_id}</span></div>
+            <div className="card-head"><h2>{L("Files", "फ़ाइलें")}</h2><span className="faint">Run {run.run_id}</span></div>
             <div className="table-wrap" style={{ maxHeight: "none" }}>
               <table>
                 <thead><tr><th>Source</th><th>File</th><th>What was read</th><th>Status</th></tr></thead>
@@ -76,7 +79,7 @@ export default function SourcesPage() {
 
           {review.length > 0 && (
             <section className="card card-pad stack">
-              <h2>Matches to confirm</h2>
+              <h2>{L("Matches to confirm", "पक्का करने वाले मिलान")}</h2>
               <p className="muted">These invoice lines look similar to one of your products, but not certain enough to use automatically.</p>
               {review.map((m) => (
                 <div key={m.match_id} className="row between">
@@ -96,7 +99,7 @@ export default function SourcesPage() {
 
           <section className="card">
             <div className="card-head">
-              <div><h2>Product matching</h2><div className="faint">Invoice descriptions rarely match shop names. Pack sizes must agree before a match is accepted.</div></div>
+              <div><h2>{L("Product matching", "प्रोडक्ट मिलान")}</h2><div className="faint">{L("Invoice descriptions rarely match shop names. Pack sizes must agree before a match is accepted.", "बिल के नाम अक्सर दुकान के नामों से मेल नहीं खाते। मिलान तभी माना जाता है जब पैक साइज़ भी मेल खाए।")}</div></div>
               <span className="badge badge-neutral">{data.matches.length} descriptions</span>
             </div>
             <div className="table-wrap">

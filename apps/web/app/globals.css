@@ -235,19 +235,17 @@ html[lang="hi"] .hero h1 { line-height: 1.25; letter-spacing: 0; font-size: clam
 .text-link { color: var(--text-2); font-weight: 500; }
 .text-link:hover { color: var(--text); text-decoration: none; }
 
-.terrain { margin: 6vh 0 0; }
-.terrain-stage { position: relative; height: min(58vh, 560px); min-height: 340px; }
-.terrain-stage canvas { width: 100% !important; height: 100% !important; display: block; }
-.terrain-tip { position: absolute; left: 0; top: 0; pointer-events: none; transition: opacity 0.5s; opacity: 0; }
-.terrain-tip span { position: absolute; left: 10px; bottom: 10px; white-space: nowrap; font-family: var(--mono); font-size: 11.5px;
-  color: var(--text); background: rgba(251, 249, 245, 0.95); border: 1px solid var(--accent-line); border-radius: 6px; padding: 5px 9px; }
-.terrain-tip::before { content: ""; position: absolute; left: -4px; top: -4px; width: 8px; height: 8px; border-radius: 50%;
-  background: var(--accent); }
-.terrain-caption { display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; font-size: 12.5px; color: var(--text-3);
-  padding: 4px 24px 0; }
-.terrain-caption i { display: inline-block; width: 18px; height: 2px; vertical-align: middle; margin-right: 8px; }
-.k-gray { background: #8a857c; }
-.k-hot { background: var(--accent); }
+.dial { margin: 4vh 0 0; }
+.dial-stage { position: relative; height: min(56vh, 520px); min-height: 340px; }
+.dial-stage canvas { width: 100% !important; height: 100% !important; display: block; }
+.dial-fallback { position: absolute; inset: 0; display: grid; place-items: center; font-size: 140px; color: var(--accent); opacity: 0.25; }
+.dial-read { position: relative; text-align: center; min-height: 118px; margin-top: 8px; }
+.dial-step { position: absolute; left: 0; right: 0; top: 0; font-family: var(--serif); font-size: clamp(22px, 2.6vw, 30px);
+  color: var(--text); opacity: 0; transform: translateY(8px); transition: opacity 0.45s ease, transform 0.45s ease; }
+.dial-step.on { opacity: 1; transform: none; }
+.dial-step.warn { color: var(--accent); }
+.dial-punch { position: absolute; left: 0; right: 0; top: 58px; color: var(--text-3); font-size: 15px; }
+@media (prefers-reduced-motion: reduce) { .dial-step { transition: none; } }
 
 .statement { padding: 22vh 0 18vh; }
 .statement p { font-family: var(--serif); font-size: clamp(28px, 3.6vw, 46px); line-height: 1.2; letter-spacing: -0.015em;
@@ -288,7 +286,7 @@ html[lang="hi"] .hero h1 { line-height: 1.25; letter-spacing: 0; font-size: clam
   .sig-section { grid-template-columns: 1fr; gap: 32px; }
   .how li { grid-template-columns: 40px 1fr; }
   .how li p { grid-column: 2; }
-  .terrain-stage { height: 320px; min-height: 0; }
+  .dial-stage { height: 320px; min-height: 0; }
   .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .split { grid-template-columns: 1fr; }
 }

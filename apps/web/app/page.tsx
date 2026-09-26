@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import MarginTerrain from "@/components/MarginTerrain";
+import SalesDial from "@/components/SalesDial";
 import { Wordmark } from "@/components/AppShell";
 import { api } from "@/lib/api";
 import { LangToggle, useLang } from "@/lib/i18n";
@@ -23,10 +23,10 @@ const COPY = {
     starting: "Starting…",
     upload: "Upload my files",
     open: "Open app",
-    terrain: {
-      legend: "Each line is one product's daily gross profit, 90 days",
-      flagged: "Where Tremor found a leak",
-      hero: "Sunpure Oil 1 L · margin 12.6% → 2.2% · ₹1,680",
+    dial: {
+      zones: ["Can't pay supplier", "Break-even", "Good sales"],
+      steps: ["The till says it was a good week.", "Then the supplier rate went up. Stock went missing.", "Nothing left to pay the supplier."],
+      punch: "Tremor shows you where it went, line by line.",
     },
     sigKicker: "What you get",
     sigH: "A lead, not a verdict.",
@@ -59,10 +59,10 @@ const COPY = {
     starting: "शुरू हो रहा है…",
     upload: "अपनी फ़ाइलें अपलोड करें",
     open: "ऐप खोलें",
-    terrain: {
-      legend: "हर लाइन एक प्रोडक्ट का 90 दिन का रोज़ का मुनाफ़ा है",
-      flagged: "जहाँ Tremor को रिसाव मिला",
-      hero: "Sunpure Oil 1 L · मार्जिन 12.6% → 2.2% · ₹1,680",
+    dial: {
+      zones: ["सप्लायर का पैसा नहीं", "बराबर", "अच्छी बिक्री"],
+      steps: ["गल्ला कहता है हफ़्ता अच्छा गया।", "फिर सप्लायर का रेट बढ़ा। स्टॉक गायब हुआ।", "सप्लायर को देने के लिए कुछ नहीं बचा।"],
+      punch: "Tremor दिखाता है कि पैसा कहाँ गया, लाइन दर लाइन।",
     },
     sigKicker: "आपको क्या मिलता है",
     sigH: "एक सुराग, फ़ैसला नहीं।",
@@ -160,8 +160,8 @@ export default function Landing() {
         {err && <div className="alert alert-error" style={{ marginTop: 14, maxWidth: 520, marginInline: "auto" }}>{err}</div>}
       </header>
 
-      <div className="l-wrap-wide">
-        <MarginTerrain caption={c.terrain} />
+      <div className="l-wrap">
+        <SalesDial copy={c.dial} />
       </div>
 
       <section className="l-wrap statement" aria-label="Results">

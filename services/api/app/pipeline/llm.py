@@ -1,7 +1,9 @@
-"""Single LLM provider interface. Only this file talks to a model API.
+"""Single LLM provider interface (Groq). Only this file talks to a model API.
 
-Swap providers by changing this module. When no key is configured every caller
-falls back to deterministic behaviour (cached/heuristic extraction, template text).
+Groq exposes an OpenAI-compatible chat completions endpoint, called here with httpx so no
+provider SDK is needed. Swap providers by changing this module only. When no key is configured
+every caller falls back to deterministic behaviour (cached/heuristic extraction, template text).
+Model output is never trusted directly: callers validate it with Pydantic and the safety policy.
 """
 
 from __future__ import annotations
@@ -9,9 +11,13 @@ from __future__ import annotations
 import json
 import re
 
+import httpx
+
 from .. import config
 
-_client = None
+
+class LLMError(RuntimeError):
+    """Raised when the provider call fails or returns unusable output."""
 
 
 def enabled() -> bool:
@@ -19,27 +25,43 @@ def enabled() -> bool:
 
 
 def model_name() -> str:
-    return config.LLM_MODEL if enabled() else "none (deterministic fallback)"
+    return f"groq:{config.LLM_MODEL}" if enabled() else "none (deterministic fallback)"
 
 
-def _get_client():
-    global _client
-    if _client is None:
-        import anthropic
-
-        _client = anthropic.Anthropic(api_key=config.ANTHROPIC_API_KEY, timeout=config.LLM_TIMEOUT_S)
-    return _client
+def _parse_json(text: str) -> dict:
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        m = re.search(r"\{.*\}", text, re.S)
+        if not m:
+            raise LLMError("model returned no JSON object") from None
+        return json.loads(m.group(0))
 
 
 def _json_call(system: str, user: str, max_tokens: int = 2000) -> dict:
-    resp = _get_client().messages.create(
-        model=config.LLM_MODEL, max_tokens=max_tokens, temperature=0, system=system, messages=[{"role": "user", "content": user}]
-    )
-    text = "".join(b.text for b in resp.content if getattr(b, "type", "") == "text")
-    m = re.search(r"\{.*\}", text, re.S)
-    if not m:
-        raise ValueError("model returned no JSON object")
-    return json.loads(m.group(0))
+    payload = {
+        "model": config.LLM_MODEL,
+        "temperature": 0,
+        "max_tokens": max_tokens,
+        "response_format": {"type": "json_object"},
+        "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
+    }
+    try:
+        resp = httpx.post(
+            f"{config.GROQ_BASE_URL}/chat/completions",
+            headers={"Authorization": f"Bearer {config.GROQ_API_KEY}"},
+            json=payload,
+            timeout=config.LLM_TIMEOUT_S,
+        )
+    except httpx.HTTPError as exc:
+        raise LLMError(f"Groq request failed: {type(exc).__name__}") from exc
+    if resp.status_code != 200:
+        raise LLMError(f"Groq returned HTTP {resp.status_code}")
+    try:
+        text = resp.json()["choices"][0]["message"]["content"]
+    except (KeyError, IndexError, ValueError) as exc:
+        raise LLMError("unexpected Groq response shape") from exc
+    return _parse_json(text or "")
 
 
 EXTRACT_SYSTEM = """You extract supplier invoice data for a small grocery shop.
@@ -60,7 +82,7 @@ You receive validated facts. Rules:
 - Observation = factual. Interpretation uses may/could/requires review.
 - Never accuse anyone, never say theft or fraud, never tell the owner to change a price or deny credit.
 - next_check must be something a human verifies.
-Return ONLY JSON with keys: title, observation, interpretation, next_check."""
+Return ONLY a JSON object with keys: title, observation, interpretation, next_check."""
 
 
 def explain_signal(facts: dict) -> dict:

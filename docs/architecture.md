@@ -18,7 +18,7 @@
 | `app/pipeline/explain.py` | Template text, optional LLM wording, number/safety checks |
 | `app/pipeline/validate_signal.py` | Publication rule and final schema validation |
 | `app/pipeline/evaluate.py` | Frozen evaluation against labels |
-| `app/pipeline/llm.py` | The only module that talks to a model provider |
+| `app/pipeline/llm.py` | The only module that talks to a model provider (Groq, OpenAI-compatible endpoint via httpx, JSON mode, temperature 0) |
 | `app/safety/policy.py` | Untrusted-text wrapper, prohibited phrases, unreferenced-number detection |
 | `app/storage/repository.py` | DuckDB document store, one table per entity, keyed by run |
 

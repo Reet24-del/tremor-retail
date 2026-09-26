@@ -49,7 +49,7 @@ All data is **synthetic** and generated deterministically (`make data`, seed 26)
 ```
 Next.js (apps/web)  ──HTTP──▶  FastAPI (services/api)
                                  │ 1 validate CSV (pandas, row numbers preserved)
-                                 │ 2 read bills (PyMuPDF rows+bbox → LLM | cached | heuristic → Pydantic)
+                                 │ 2 read bills (PyMuPDF rows+bbox → Groq LLM | cached | heuristic → Pydantic)
                                  │ 3 match products (normalize → pack-size block → RapidFuzz → semantic)
                                  │ 4 features (deterministic finance formulas, no model)
                                  │ 5 detect (robust z-score × INR impact; spike and bulk-buy detectors)
@@ -62,7 +62,7 @@ Next.js (apps/web)  ──HTTP──▶  FastAPI (services/api)
 | Task | Method | Why |
 |---|---|---|
 | Money math | Plain Python | Exact and reproducible; the model never produces a number |
-| Invoice fields | PyMuPDF + schema-constrained LLM (fallback: cached validated JSON or deterministic parser) | Handles messy layouts; every line must be found in the PDF and pass qty × rate = amount |
+| Invoice fields | PyMuPDF + Groq LLM in JSON mode (fallback: cached validated JSON or deterministic parser) | Handles messy layouts; every line must be found in the PDF and pass qty × rate = amount |
 | Product matching | Normalization + lexicon (haldi → turmeric) + RapidFuzz, optional sentence embeddings | Shop and supplier names never match exactly; 5 L never matches 1 L |
 | Anomaly ranking | Robust z-score (median/MAD) across products × financial impact | Works on small data and is explainable to a shopkeeper |
 | Explanation | Template, optionally reworded by an LLM that is rejected if it adds numbers or banned claims | Plain language without hallucinated facts |
@@ -87,7 +87,7 @@ Copy `.env.example`. **No key is required**: without one, Tremor uses cached/heu
 
 | Variable | Where | Purpose |
 |---|---|---|
-| `ANTHROPIC_API_KEY`, `TREMOR_LLM_MODEL` | API | Enable LLM extraction and wording |
+| `GROQ_API_KEY`, `TREMOR_LLM_MODEL` (default `llama-3.3-70b-versatile`) | API | Enable Groq LLM extraction and wording |
 | `TREMOR_CORS_ORIGINS` | API | Allowed web origins |
 | `TREMOR_EMBEDDINGS=1` | API | Use sentence-transformers for semantic matching |
 | `NEXT_PUBLIC_API_URL` | Web | API base URL |
@@ -98,7 +98,7 @@ Copy `.env.example`. **No key is required**: without one, Tremor uses cached/heu
 make setup      # install everything
 make api        # API on http://localhost:8000  (docs at /docs)
 make web        # web on http://localhost:3000
-make test       # 19 backend unit + integration tests
+make test       # 25 backend unit + integration tests
 make eval       # frozen evaluation, exits non-zero if a target is missed
 make lint       # ruff + eslint + tsc
 make data       # regenerate the synthetic fixture

@@ -7,10 +7,11 @@ DEMO_DIR = DATA_DIR / "demo"
 RUNTIME_DIR = Path(os.getenv("TREMOR_RUNTIME_DIR", REPO_ROOT / "runtime"))
 DB_PATH = RUNTIME_DIR / "tremor.duckdb"
 
-ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
-LLM_MODEL = os.getenv("TREMOR_LLM_MODEL", "")  # e.g. a current Claude Sonnet model id
-USE_LLM = bool(ANTHROPIC_API_KEY and LLM_MODEL and os.getenv("TREMOR_DISABLE_LLM") != "1")
-LLM_TIMEOUT_S = float(os.getenv("TREMOR_LLM_TIMEOUT", "40"))
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+GROQ_BASE_URL = os.getenv("GROQ_BASE_URL", "https://api.groq.com/openai/v1")
+LLM_MODEL = os.getenv("TREMOR_LLM_MODEL", "llama-3.3-70b-versatile")
+USE_LLM = bool(GROQ_API_KEY and LLM_MODEL and os.getenv("TREMOR_DISABLE_LLM") != "1")
+LLM_TIMEOUT_S = float(os.getenv("TREMOR_LLM_TIMEOUT", "30"))
 
 MAX_UPLOAD_MB = 10
 DETECTOR_VERSION = "demo-v1"

@@ -109,6 +109,8 @@ def test_csv_only_upload_finds_stock_gaps_and_asks_for_bills():
     assert "SKU-RICE-1K" in by_product and "SKU-OIL-1L" in by_product
     rice = client.get(f"/api/signals/{by_product['SKU-RICE-1K']['signal_id']}").json()["signal"]
     assert rice["facts"]["stock_variance_units"] == -20
+    assert "median selling price" in rice["financial_impact"]["method"]
+    assert rice["claims"]
     assert rice["evidence_strength_components"]["source_corroboration"] == 0.5
     assert any("sales and stock file alone" in lim for lim in rice["limitations"])
 

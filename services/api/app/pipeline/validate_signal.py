@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from ..models.contracts import Signal
 from ..safety.policy import prohibited_phrases
+from .claims import validate_claims
 from .explain import check_text
 
 
@@ -13,6 +14,7 @@ def validate(signal: dict, evidence: dict, facts: dict) -> tuple[Signal | None, 
         sig = Signal.model_validate(signal)
     except Exception as exc:
         return None, [f"schema: {exc}"]
+    problems += validate_claims(signal, evidence, facts)
     missing = [e for e in sig.evidence_ids if e not in evidence]
     if missing:
         problems.append(f"unresolved evidence ids: {missing}")

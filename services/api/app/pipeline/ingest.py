@@ -7,6 +7,7 @@ always resolves back to the uploaded file.
 from __future__ import annotations
 
 import io
+import math
 from dataclasses import dataclass, field
 
 import pandas as pd
@@ -57,6 +58,8 @@ def load_sales_csv(content: bytes) -> CsvResult:
     df = df.copy()
     df["source_row"] = range(2, len(df) + 2)
     errors: list[str] = []
+    if "currency" in df.columns and (~df["currency"].str.strip().str.upper().eq("INR")).any():
+        errors.append("Unsupported currency in currency column; only INR is supported")
     warnings: list[str] = []
 
     df["transaction_date"] = pd.to_datetime(df["transaction_date"], errors="coerce").dt.date
@@ -70,7 +73,7 @@ def load_sales_csv(content: bytes) -> CsvResult:
             continue
         raw = df[col].replace("", "0" if col in OPTIONAL_NUMERIC else None)
         df[col] = pd.to_numeric(raw, errors="coerce")
-        bad = df[col].isna()
+        bad = df[col].isna() | ~df[col].map(lambda value: math.isfinite(float(value)))
         if bad.any():
             errors.append(f"Invalid number in {col} on rows {_rows(bad, df)}")
         neg = df[col] < 0

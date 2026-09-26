@@ -1,0 +1,64 @@
+{
+  "run_id": "run_20260926_082817_d967f3",
+  "mode": "demo",
+  "status": "failed",
+  "current_stage": "reading_supplier_bills",
+  "completed_stages": [
+    "validating_records"
+  ],
+  "failed_stage": "reading_supplier_bills",
+  "error": "Analysis failed at reading_supplier_bills: No supplier invoice could be read",
+  "warnings": [
+    "broken.pdf: could not be read; excluded from analysis"
+  ],
+  "started_at": "2026-09-26T08:28:17.669116Z",
+  "completed_at": "2026-09-26T08:28:17.690691Z",
+  "dataset_version": "demo-fixture-v1",
+  "configuration_version": "cfg-2026-09-26",
+  "store_name": "Gupta General Store, Indira Nagar",
+  "summary": {
+    "records_analysed": null,
+    "products": null,
+    "invoices_read": null,
+    "invoice_lines": null,
+    "date_from": null,
+    "date_to": null,
+    "signals": null,
+    "rejected_candidates": null,
+    "amount_requiring_investigation": null,
+    "extraction_methods": null,
+    "llm_enabled": null,
+    "matches": null,
+    "issue_count": null,
+    "ready_for_review": null
+  },
+  "contract_version": "1.1",
+  "parent_run_id": null,
+  "issues": [
+    {
+      "code": "invoice_unreadable",
+      "message": "Corrupted or unreadable PDF; replace this file",
+      "action": "Replace the PDF",
+      "file": "broken.pdf",
+      "field": "invoice",
+      "rows": [],
+      "source_id": "src_broken_07e1e845",
+      "product_id": null,
+      "line_ids": [],
+      "status": "needs_data"
+    },
+    {
+      "code": "pipeline_failed",
+      "message": "Analysis failed at reading_supplier_bills: No supplier invoice could be read",
+      "action": "Correct the indicated data or retry the retained inputs",
+      "file": null,
+      "field": null,
+      "rows": [],
+      "source_id": null,
+      "product_id": null,
+      "line_ids": [],
+      "status": "needs_data"
+    }
+  ],
+  "retryable": true
+}

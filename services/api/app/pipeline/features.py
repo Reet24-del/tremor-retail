@@ -90,6 +90,7 @@ class ProductFeatures:
     completeness: float = 1.0
     stock_mode: str = "invoices"  # "invoices" = deliveries from bills, "inferred" = deliveries inferred from stock jumps
     value_basis: str = "latest_cost"  # "latest_cost" or "selling_price" when no bill is available
+    conflicting_line_ids: list[str] = field(default_factory=list)
 
     def as_row(self) -> dict:
         d = {
@@ -136,7 +137,11 @@ def build_features(df: pd.DataFrame, purchases_by_product: dict[str, list[Purcha
 
         # cost / margin: compare the latest invoice with the previous invoice at a different date
         invoice_dates = sorted({p.date for p in buys})
-        if len(invoice_dates) >= 2:
+        for invoice_date in invoice_dates:
+            same_day = [p for p in buys if p.date == invoice_date]
+            if len({round(p.unit_cost, 4) for p in same_day}) > 1:
+                f.conflicting_line_ids.extend(p.line_id for p in same_day)
+        if len(invoice_dates) >= 2 and not f.conflicting_line_ids:
             latest_date, prior_date = invoice_dates[-1], invoice_dates[-2]
             latest = [p for p in buys if p.date == latest_date][-1]
             prior = [p for p in buys if p.date == prior_date][-1]

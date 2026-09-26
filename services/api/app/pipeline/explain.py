@@ -132,6 +132,14 @@ def check_text(text: dict, facts: dict) -> list[str]:
     return problems
 
 
+def approved_wording(signal_type: str, facts: dict) -> dict[str, list[str]]:
+    base = template_text(signal_type, facts)
+    choices = {key: [value] for key, value in base.items()}
+    choices["interpretation"].append("These records may indicate an issue that needs a human review.")
+    choices["next_check"].append("Verify the cited invoices and sales records before deciding what to do.")
+    return choices
+
+
 def explain(signal_type: str, facts: dict) -> tuple[dict, str, list[str]]:
     """Returns (text, source, notes). Source is 'llm' or 'template'."""
     base = template_text(signal_type, facts)
@@ -139,10 +147,19 @@ def explain(signal_type: str, facts: dict) -> tuple[dict, str, list[str]]:
         return base, "template", []
     try:
         out = llm.explain_signal(
-            {"signal_type": signal_type, "facts": facts, "draft": base, "prompt_version": config.PROMPT_VERSION}
+            {
+                "signal_type": signal_type,
+                "facts": facts,
+                "draft": base,
+                "approved_wording": approved_wording(signal_type, facts),
+                "prompt_version": config.PROMPT_VERSION,
+            }
         )
         text = {k: str(out.get(k, "")).strip() for k in ("title", "observation", "interpretation", "next_check")}
         problems = check_text(text, facts)
+        for key, choices in approved_wording(signal_type, facts).items():
+            if text.get(key) not in choices:
+                problems.append(f"{key} is outside the evidence-validated wording choices")
         if problems:
             return base, "template", [f"LLM wording rejected: {p}" for p in problems]
         return text, "llm", []

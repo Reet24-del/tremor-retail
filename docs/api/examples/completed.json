@@ -1,0 +1,63 @@
+{
+  "run_id": "run_20260926_082816_6284ac",
+  "mode": "demo",
+  "status": "completed",
+  "current_stage": null,
+  "completed_stages": [
+    "validating_records",
+    "reading_supplier_bills",
+    "matching_products",
+    "calculating_features",
+    "finding_unusual_changes",
+    "linking_evidence",
+    "preparing_signals"
+  ],
+  "failed_stage": null,
+  "error": null,
+  "warnings": [],
+  "started_at": "2026-09-26T08:28:16.754096Z",
+  "completed_at": "2026-09-26T08:28:17.130108Z",
+  "dataset_version": "demo-fixture-v1",
+  "configuration_version": "cfg-2026-09-26",
+  "store_name": "Gupta General Store, Indira Nagar",
+  "summary": {
+    "records_analysed": 3060,
+    "products": 34,
+    "invoices_read": 10,
+    "invoice_lines": 104,
+    "date_from": "2026-06-27",
+    "date_to": "2026-09-24",
+    "signals": 5,
+    "rejected_candidates": 2,
+    "amount_requiring_investigation": 5495.0,
+    "extraction_methods": [
+      "cached"
+    ],
+    "llm_enabled": false,
+    "matches": {
+      "accepted": 35,
+      "needs_review": 0,
+      "unmatched": 0,
+      "blocked": 1
+    },
+    "issue_count": 1,
+    "ready_for_review": true
+  },
+  "contract_version": "1.1",
+  "parent_run_id": null,
+  "issues": [
+    {
+      "code": "product_match_required",
+      "message": "Pack size conflicts with Sunpure Cooking Oil 1 L; not matched without unit conversion evidence",
+      "action": "Select a compatible product or leave the line unmatched",
+      "file": null,
+      "field": "product_id",
+      "rows": [],
+      "source_id": null,
+      "product_id": null,
+      "line_ids": [],
+      "status": "needs_review"
+    }
+  ],
+  "retryable": true
+}

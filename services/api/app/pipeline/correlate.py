@@ -110,7 +110,7 @@ def build_signal_drafts(
                 "sales_csv",
                 f"Sales rows between the two invoices ({len(f.before_rows)} days)",
                 {"rows": f.before_rows, "columns": CSV_COLS},
-                _csv_excerpt(df, f.before_rows[-7:]),
+                _csv_excerpt(df, f.before_rows),
             )
             calc = {
                 "prior_unit_cost": prior.unit_cost,
@@ -216,6 +216,9 @@ def build_signal_drafts(
                 **_stock_calc(f),
                 "product": f.product_name,
                 "discrepancy_dates": [_d(x) for x in f.discrepancy_dates],
+                "stock_mode": f.stock_mode,
+                "value_basis": f.value_basis,
+                "valuation_unit_price": f.latest.unit_cost if f.latest else f.variance_value / abs(f.variance_units),
                 "variance_value_at_latest_cost": round(f.variance_value, 2),
                 "latest_unit_cost": f.latest.unit_cost if f.latest else None,
                 "units_per_day": round(f.velocity, 1),
@@ -302,19 +305,11 @@ def _margin_alternatives(f: ProductFeatures, promos, e_sales, e_cal, e_before) -
                     "evidence_ids": [e_sales, e_cal],
                 }
             )
-    else:
-        alts.append(
-            {
-                "name": "a temporary promotion",
-                "reason": "No promotion is recorded for this product and the selling price did not drop.",
-                "evidence_ids": [e_sales, e_before],
-            }
-        )
     if f.median_price_after is not None and f.asp_before is not None and f.asp_after <= f.asp_before:
         alts.append(
             {
                 "name": "the selling price already covering it",
-                "reason": f"The selling price stayed at {_inr(f.asp_after)} after the new cost arrived.",
+                "reason": f"The average selling price was {_inr(f.asp_after)} after the new cost arrived.",
                 "evidence_ids": [e_sales],
             }
         )

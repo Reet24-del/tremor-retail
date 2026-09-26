@@ -98,7 +98,7 @@ Copy `.env.example`. **No key is required**: without one, Tremor uses cached/heu
 make setup      # install everything
 make api        # API on http://localhost:8000  (docs at /docs)
 make web        # web on http://localhost:3000
-make test       # 27 backend unit + integration tests
+make test       # backend unit, integration and regression tests
 make eval       # frozen evaluation, exits non-zero if a target is missed
 make stress     # 50 unseen random stores, writes docs/stress-test.md
 make lint       # ruff + eslint + tsc
@@ -106,6 +106,21 @@ make data       # regenerate the synthetic fixture
 ```
 
 CI (`.github/workflows/ci.yml`) runs lint, format check, tests, the evaluation and the web build on every push.
+
+## Backend integration handoff
+
+The backend API contract is now **1.1**. See [the frontend handoff](docs/backend-handoff.md) for invoice confirmation,
+claim-level evidence, retained-input retries, structured review issues, generated TypeScript types, and response examples.
+Run `make contracts` after changing Pydantic contracts; CI checks the generated files for drift.
+
+The backend holds uncertain invoice fields and conflicting costs for review, rejects unsupported currencies, and preserves
+original extraction plus correction history. Model explanations select from evidence-validated wording choices; arbitrary
+paraphrases are rejected. Human reviews remain separate from invoice-field corrections.
+
+Backend verification: 52 tests pass; the frozen fixture detects 5/5 signals with 5/5 precision and 45/45 claim coverage.
+The ten-store CI stress set (seeds 3000–3009) matches the original backend at 38/41 recall and 38/38 precision.
+Three consecutive local HTTP smoke runs verified the INR 1,680 hero signal, original evidence pages, and saved reviews.
+Live Groq and public-host verification remain pending a configured key and deployment; mocked-provider tests are included.
 
 ## 10. What works
 

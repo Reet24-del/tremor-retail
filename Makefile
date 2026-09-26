@@ -28,3 +28,6 @@ stress:           ## unchanged pipeline on 50 unseen random stores -> docs/stres
 	python scripts/stress_test.py --stores 50 --seed-start 2000
 
 check: lint test eval   ## everything CI runs
+
+contracts:       ## regenerate shared TypeScript and OpenAPI contracts
+	python scripts/export_contracts.py

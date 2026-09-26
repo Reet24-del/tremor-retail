@@ -151,15 +151,7 @@ def test_llm_wording_with_accusation_is_rejected(groq_on, monkeypatch):
 
 
 def test_clean_llm_wording_is_used(groq_on, monkeypatch):
-    _mock(
-        monkeypatch,
-        {
-            "title": "Cooking oil margin needs a look",
-            "observation": "Supplier cost went from INR 118 to INR 132 on SW-184 while you still sell at INR 135.",
-            "interpretation": "Each bottle may now earn too little to cover shop costs.",
-            "next_check": "Check the new rate with Shakti Wholesale.",
-        },
-    )
+    _mock(monkeypatch, explain.template_text("margin_leakage", FACTS))
     text, source, notes = explain.explain("margin_leakage", FACTS)
     assert source == "llm" and not notes
     assert "INR 132" in text["observation"]

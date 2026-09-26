@@ -6,24 +6,25 @@ import hashlib
 import json
 import re
 import threading
-import traceback
 import uuid
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
 
 from .. import config
-from ..models.contracts import STAGES, RunStatus, Source
+from ..models.contracts import STAGES, DataIssue, Invoice, RunStatus, Source
 from ..storage import repository as repo
 from . import llm
+from .claims import build_claims, financial_impact
 from .correlate import build_signal_drafts
 from .detect import detect
 from .explain import explain, severity_for
 from .explain_hi import translate_hi
 from .features import Purchase, build_features
 from .ingest import load_sales_csv
-from .invoice_extract import extract_invoice
+from .invoice_extract import _build, extract_invoice, read_pdf_rows
 from .product_match import match_all
+from .retained import save_inputs
 from .validate_signal import validate
 
 DATASET_DEMO = "demo-fixture-v1"
@@ -41,6 +42,9 @@ class RunInputs:
     frozen_matches: dict | None = None
     manual_matches: dict = field(default_factory=dict)
     dataset_version: str = "upload"
+    invoice_corrections: dict = field(default_factory=dict)
+    original_extractions: dict = field(default_factory=dict)
+    parent_run_id: str | None = None
 
 
 def now() -> datetime:
@@ -85,7 +89,10 @@ class Run:
             dataset_version=inputs.dataset_version,
             configuration_version=config.CONFIG_VERSION,
             store_name=inputs.store_name,
+            parent_run_id=inputs.parent_run_id,
         )
+        save_inputs(self.run_id, inputs)
+        self.status.retryable = True
         self._save_status()
 
     def _save_status(self):
@@ -107,8 +114,16 @@ class Run:
         except Exception as exc:
             self.status.status = "failed"
             self.status.failed_stage = self.status.current_stage
-            self.status.error = f"{type(exc).__name__}: {exc}"
-            self.status.warnings.append(traceback.format_exc(limit=2).splitlines()[-1])
+            self.status.error = "Analysis failed at " + str(self.status.current_stage)
+            if isinstance(exc, ValueError):
+                self.status.error += f": {exc}"
+            self.status.issues.append(
+                DataIssue(
+                    code="pipeline_failed",
+                    message=self.status.error,
+                    action="Correct the indicated data or retry the retained inputs",
+                )
+            )
             self.status.completed_at = now()
             self._save_status()
         return self
@@ -146,16 +161,34 @@ class Run:
         # 2. Reading supplier bills
         self._stage("reading_supplier_bills")
         invoices, line_index, methods = [], {}, set()
+        unreadable = False
         for name, content in inp.pdfs:
-            sid = f"src_{_slug(name)}"
+            sid = f"src_{_slug(name)}_{hashlib.sha256(name.encode()).hexdigest()[:8]}"
             path = rdir / name
             path.write_bytes(content)
             cached = (inp.cached_dir / f"{Path(name).stem}.json") if inp.cached_dir else None
-            inv, warns, method = extract_invoice(sid, content, cached)
+            original = inp.original_extractions.get(sid)
+            if original:
+                inv = Invoice.model_validate(original["invoice"])
+                warns, method = original["warnings"], original["method"]
+            else:
+                inv, warns, method = extract_invoice(sid, content, cached)
+                original = {
+                    "source_id": sid,
+                    "invoice": inv.model_dump(mode="json") if inv else None,
+                    "warnings": warns,
+                    "method": method,
+                }
+            repo.put("original_invoices", rid, sid, original)
+            correction = inp.invoice_corrections.get(sid)
+            try:
+                pdf_rows, pages = read_pdf_rows(content)
+            except Exception:
+                pdf_rows, pages = [], 0
+            if correction:
+                inv, warns = _build(sid, correction["invoice"], pdf_rows, "manual", confirmed=True)
+                method = "manual"
             methods.add(method)
-            import pymupdf
-
-            pages = pymupdf.open(stream=content, filetype="pdf").page_count
             repo.put(
                 "sources",
                 rid,
@@ -167,7 +200,7 @@ class Run:
                     content_hash=hashlib.sha256(content).hexdigest(),
                     uploaded_at=now(),
                     page_count=pages,
-                    status="error" if inv is None else ("warning" if warns else "ok"),
+                    status="error" if inv is None else ("warning" if warns or inv.validation_status == "needs_review" else "ok"),
                     messages=warns,
                     summary={
                         "path": str(path),
@@ -179,13 +212,28 @@ class Run:
                     },
                 ).model_dump(mode="json"),
             )
+            if inv is None or inv.validation_status == "needs_review":
+                self.status.issues.append(
+                    DataIssue(
+                        code="invoice_unreadable" if inv is None else "invoice_confirmation_required",
+                        message="; ".join(warns) or "Invoice fields require confirmation",
+                        action="Replace the PDF" if inv is None else "Confirm or correct the invoice fields",
+                        file=name,
+                        source_id=sid,
+                        field="invoice",
+                        status="needs_data" if inv is None else "needs_review",
+                    )
+                )
             if inv is None:
+                unreadable = True
                 self.status.warnings.append(f"{name}: could not be read; excluded from analysis")
                 continue
             invoices.append(inv)
             repo.put("invoices", rid, sid, inv.model_dump(mode="json"))
             for line in inv.line_items:
                 line_index[line.line_id] = (inv, line)
+        if not invoices and self.inputs.pdfs:
+            raise ValueError("No supplier invoices could be read; upload readable digital PDFs")
         if not invoices:
             self.status.warnings.append(
                 "No supplier bills were used: stock was checked from the sales file alone and margin checks were skipped."
@@ -196,20 +244,28 @@ class Run:
         # 3. Matching products
         self._stage("matching_products")
         products = df[["product_id", "product_name"]].drop_duplicates("product_id").to_dict("records")
+        repo.put_many("products", rid, {p["product_id"]: p for p in products})
         matches = match_all(
             [line.raw_description for i in invoices for line in i.line_items],
             products,
             frozen=inp.frozen_matches,
             manual=inp.manual_matches,
         )
+        if any(m.semantic_backend == "fallback_lexicon" for m in matches.values()):
+            self.status.warnings.append("Embedding model unavailable; using explicitly labelled lexicon matching")
         repo.put_many("matches", rid, {m.match_id: m.model_dump(mode="json") for m in matches.values()})
 
         # 4. Calculating financial features
         self._stage("calculating_features")
         purchases: dict[str, list[Purchase]] = {}
+        held_products = set()
         for inv in invoices:
             for line in inv.line_items:
                 m = matches[line.raw_description]
+                if inv.validation_status == "needs_review" or line.validation_status == "needs_review":
+                    if m.product_id:
+                        held_products.add(m.product_id)
+                    continue
                 if m.status == "accepted" and m.product_id:
                     purchases.setdefault(m.product_id, []).append(
                         Purchase(
@@ -225,12 +281,63 @@ class Run:
                         )
                     )
         features = build_features(df, purchases)
+        for m in matches.values():
+            if m.status in ("needs_review", "unmatched", "blocked"):
+                self.status.issues.append(
+                    DataIssue(
+                        code="product_match_required",
+                        message=m.reason or "Product is unmatched",
+                        action="Select a compatible product or leave the line unmatched",
+                        field="product_id",
+                        product_id=m.product_id,
+                        status="needs_review",
+                    )
+                )
+        for pid, feature in features.items():
+            if feature.conflicting_line_ids:
+                held_products.add(pid)
+                self.status.issues.append(
+                    DataIssue(
+                        code="conflicting_invoice_costs",
+                        message="Different costs on the same date",
+                        action="Inspect and correct the cited invoices; no cost is selected automatically",
+                        product_id=pid,
+                        line_ids=feature.conflicting_line_ids,
+                        status="unresolved",
+                    )
+                )
+            elif not feature.has_baseline:
+                self.status.issues.append(
+                    DataIssue(
+                        code="missing_baseline",
+                        message="Two distinct invoice dates are required",
+                        action="Supply an earlier and a current invoice for this product",
+                        product_id=pid,
+                    )
+                )
+            if feature.days < 7:
+                self.status.issues.append(
+                    DataIssue(
+                        code="insufficient_history",
+                        message="Fewer than seven days of sales history",
+                        action="Supply more history; only a direct cost comparison is available",
+                        product_id=pid,
+                    )
+                )
         repo.put_many("features", rid, {pid: f.as_row() for pid, f in features.items()})
 
         # 5. Finding unusual changes
         self._stage("finding_unusual_changes")
-        pending = {m.product_id for m in matches.values() if m.status == "needs_review" and m.product_id}
-        cands = detect(features, df, inp.calendar, pending_products=pending)
+        pending = {m.product_id for m in matches.values() if m.status != "accepted" and m.product_id}
+        held_products |= pending
+        pending |= held_products
+        # Unknown deliveries can create false stock shortages for any product.
+        unknown_deliveries = unreadable or any(m.status == "unmatched" and m.method != "manual" for m in matches.values())
+        stock_pending = set(features) if unknown_deliveries else pending
+        cands = detect(features, df, inp.calendar, pending_products=stock_pending)
+        for candidate in cands:
+            if unreadable or set(candidate.product_ids) & held_products:
+                candidate.rejected_reason = "Needs data: resolve invoice extraction or conflicting costs before publication"
 
         # 6. Linking evidence
         self._stage("linking_evidence")
@@ -270,29 +377,14 @@ class Run:
                 "data_completeness": round(f.completeness, 2),
                 "anomaly_strength": round(min(abs(c.anomaly_score) / 6.0, 1.0), 2),
             }
-            if c.candidate_type == "margin_leakage":
-                impact = {
-                    "amount": round(f.leakage, 2),
-                    "label": "estimated margin leakage",
-                    "method": f"{int(f.units_after)} units sold since {facts['latest_invoice_date']} x "
-                    f"INR {facts['unit_cost_increase']:g} increase in unit cost",
-                }
-            else:
-                impact = {
-                    "amount": round(f.variance_value, 2),
-                    "label": "estimated stock value not reconciled",
-                    "method": (
-                        f"{abs(int(f.variance_units))} units x latest unit cost INR {f.latest.unit_cost:g}"
-                        if f.value_basis == "latest_cost"
-                        else f"{abs(int(f.variance_units))} units x median selling price INR "
-                        f"{f.variance_value / max(1, abs(f.variance_units)):g} (no supplier bill to value it at cost)"
-                    ),
-                }
+            impact = financial_impact(c.candidate_type, facts)
             limitations = [
                 "Synthetic demo data" if inp.mode == "demo" else "Based only on the uploaded files",
                 "Excludes tax, delivery charges, rebates and damaged stock unless recorded in the files",
                 "Estimated amounts compare with the prior purchase cost; they are not an accounting loss",
             ]
+            if f.days < 7:
+                limitations.append("Insufficient history: direct cost comparison, not a statistical trend")
             if "cached" in {
                 evidence[e].get("excerpt", {}).get("extraction_method")
                 for e in ev_ids
@@ -331,6 +423,7 @@ class Run:
                 },
                 "translations": {"hi": hindi} if hindi else {},
             }
+            sig["claims"] = build_claims(sig)
             ok, problems = validate(sig, evidence, facts)
             if ok is None:
                 self.status.warnings.append(f"Signal for {f.product_name} blocked from publication: {'; '.join(problems)}")
@@ -360,6 +453,8 @@ class Run:
                 else ("needs_more_bills" if len({i.invoice_date for i in invoices}) < 2 else "done")
             ),
             "llm_enabled": llm.enabled(),
+            "issue_count": len(self.status.issues),
+            "ready_for_review": bool(self.status.issues),
             "matches": {
                 s: sum(1 for m in matches.values() if m.status == s) for s in ("accepted", "needs_review", "unmatched", "blocked")
             },

@@ -9,7 +9,20 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class Strict(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", allow_inf_nan=False)
+
+
+class DataIssue(Strict):
+    code: str
+    message: str
+    action: str
+    file: str | None = None
+    field: str | None = None
+    rows: list[int] = []
+    source_id: str | None = None
+    product_id: str | None = None
+    line_ids: list[str] = []
+    status: Literal["needs_review", "needs_data", "unresolved"] = "needs_data"
 
 
 # ---------- Invoices ----------
@@ -25,6 +38,8 @@ class InvoiceLine(Strict):
     source_text: str = ""
     extraction_confidence: float = Field(ge=0, le=1)
     bbox: list[float] | None = None
+    validation_status: Literal["verified", "needs_review", "confirmed"] = "verified"
+    validation_issues: list[str] = []
 
 
 class Invoice(Strict):
@@ -35,8 +50,9 @@ class Invoice(Strict):
     currency: Literal["INR"]
     line_items: list[InvoiceLine] = Field(min_length=1)
     invoice_total: float = Field(gt=0)
-    extraction_method: Literal["llm", "cached", "heuristic"]
+    extraction_method: Literal["llm", "cached", "heuristic", "manual"]
     extraction_warnings: list[str] = []
+    validation_status: Literal["verified", "needs_review", "confirmed"] = "verified"
 
 
 class LLMInvoiceLine(Strict):
@@ -58,6 +74,29 @@ class LLMInvoice(Strict):
     currency: Literal["INR"]
     invoice_total: float
     line_items: list[LLMInvoiceLine]
+
+
+class InvoiceCorrection(Strict):
+    invoice: LLMInvoice
+    reason: str = Field(min_length=3, max_length=1000)
+
+    @field_validator("reason")
+    @classmethod
+    def meaningful_reason(cls, v: str) -> str:
+        if len(v.strip()) < 3:
+            raise ValueError("Explain why the invoice fields were confirmed or corrected")
+        return v.strip()
+
+
+class MatchDecisions(Strict):
+    decisions: dict[str, str | None]
+
+
+class RunStarted(Strict):
+    run_id: str
+    status: str
+    stages: list[str] = []
+    parent_run_id: str | None = None
 
 
 # ---------- Sources ----------
@@ -85,6 +124,7 @@ class ProductMatch(Strict):
     confidence: float
     status: Literal["accepted", "needs_review", "unmatched", "blocked"]
     reason: str = ""
+    semantic_backend: Literal["lexicon", "sentence_transformers", "fallback_lexicon"] = "lexicon"
 
 
 # ---------- Signals ----------
@@ -120,6 +160,23 @@ class ModelMetadata(Strict):
     extraction_method: str
 
 
+class Claim(Strict):
+    claim_id: str
+    field: str
+    text: str
+    kind: Literal["observation", "interpretation", "recommendation"]
+    evidence_ids: list[str] = Field(min_length=1)
+
+
+class SignalTranslation(Strict):
+    title: str = ""
+    observation: str = ""
+    impact_label: str = ""
+    interpretation: str = ""
+    next_check: str = ""
+    limitations: list[str] = Field(default_factory=list)
+
+
 class Signal(Strict):
     signal_id: str
     run_id: str
@@ -142,7 +199,8 @@ class Signal(Strict):
     model_metadata: ModelMetadata
     # Language code -> translated user-facing text (title, observation, interpretation, next_check,
     # limitations, impact_label). Built from the same validated facts as the English text.
-    translations: dict[str, dict[str, Any]] = Field(default_factory=dict)
+    translations: dict[str, SignalTranslation] = Field(default_factory=dict)
+    claims: list[Claim] = Field(min_length=1)
 
     @field_validator("next_check", "observation", "interpretation", "title")
     @classmethod
@@ -212,3 +270,7 @@ class RunStatus(Strict):
     configuration_version: str
     store_name: str = ""
     summary: dict[str, Any] = {}
+    contract_version: str = "1.1"
+    parent_run_id: str | None = None
+    issues: list[DataIssue] = []
+    retryable: bool = False

@@ -53,7 +53,8 @@ def detect(
     cost_z = robust_z(with_base, floor=1.0)
     for pid, z in cost_z.items():
         f = features[pid]
-        if z >= config.COST_Z_THRESHOLD and f.leakage >= config.MIN_LEAKAGE_INR:
+        short_history = f.days < 7
+        if (z >= config.COST_Z_THRESHOLD or (short_history and f.cost_change_pct > 0)) and f.leakage >= config.MIN_LEAKAGE_INR:
             cands.append(
                 Candidate(
                     f"cand_margin_{pid}",
@@ -61,7 +62,11 @@ def detect(
                     [pid],
                     z,
                     f.leakage,
-                    {"cost_change_pct": f.cost_change_pct, "margin_drop_points": f.margin_drop_points},
+                    {
+                        "cost_change_pct": f.cost_change_pct,
+                        "margin_drop_points": f.margin_drop_points,
+                        "insufficient_history": short_history,
+                    },
                 )
             )
 

@@ -1,0 +1,2 @@
+# Optional. The default install uses explicitly labelled lexicon matching.
+sentence-transformers>=3.0

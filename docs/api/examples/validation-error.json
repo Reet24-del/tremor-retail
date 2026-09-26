@@ -1,0 +1,19 @@
+{
+  "detail": {
+    "message": "Invalid request fields",
+    "issues": [
+      {
+        "code": "schema_validation",
+        "message": "Input should be a valid dictionary",
+        "action": "Correct the indicated field or file and submit again",
+        "file": null,
+        "field": "body.decisions",
+        "rows": [],
+        "source_id": null,
+        "product_id": null,
+        "line_ids": [],
+        "status": "needs_data"
+      }
+    ]
+  }
+}

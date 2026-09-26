@@ -10,7 +10,20 @@ import duckdb
 
 from .. import config
 
-TABLES = ["runs", "sources", "invoices", "matches", "features", "signals", "evidence", "candidates", "reviews"]
+TABLES = [
+    "runs",
+    "sources",
+    "invoices",
+    "matches",
+    "features",
+    "signals",
+    "evidence",
+    "candidates",
+    "reviews",
+    "inputs",
+    "original_invoices",
+    "products",
+]
 _lock = threading.Lock()
 _con = None
 
@@ -66,7 +79,7 @@ def list_(table: str, run_id: str) -> list[dict]:
 
 def latest_run_id() -> str | None:
     with _lock:
-        row = _db().execute("SELECT run_id FROM runs ORDER BY updated_at DESC LIMIT 1").fetchone()
+        row = _db().execute("SELECT run_id FROM runs WHERE id = run_id ORDER BY updated_at DESC LIMIT 1").fetchone()
     return row[0] if row else None
 
 

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from fastapi import APIRouter, HTTPException
 
+from ..models.responses import EvidenceResponse, SignalDetail
 from ..storage import repository as repo
 
 router = APIRouter(prefix="/api")
@@ -19,7 +20,7 @@ def with_review_status(sig: dict) -> dict:
     return sig
 
 
-@router.get("/signals/{signal_id}")
+@router.get("/signals/{signal_id}", response_model=SignalDetail)
 def get_signal(signal_id: str):
     sig = repo.find("signals", signal_id)
     if not sig:
@@ -39,7 +40,7 @@ def get_signal(signal_id: str):
     return {"signal": sig, "evidence": evidence, "reviews": reviews}
 
 
-@router.get("/evidence/{evidence_id}")
+@router.get("/evidence/{evidence_id}", response_model=EvidenceResponse)
 def get_evidence(evidence_id: str):
     doc = repo.find("evidence", evidence_id)
     if not doc:

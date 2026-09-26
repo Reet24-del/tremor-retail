@@ -4,16 +4,29 @@ import json
 
 import pymupdf
 from fastapi import APIRouter, File, HTTPException, Response, UploadFile
-from pydantic import BaseModel
 
 from .. import config
-from ..models.contracts import STAGES
+from ..models.contracts import STAGES, InvoiceCorrection, MatchDecisions, RunStarted
+from ..models.responses import CsvValidationResponse, RunResponse, SignalsResponse, SourcesResponse
 from ..pipeline.ingest import load_sales_csv
-from ..pipeline.run import Run, RunInputs, demo_inputs
+from ..pipeline.invoice_extract import _build, read_pdf_rows
+from ..pipeline.product_match import validate_decisions
+from ..pipeline.retained import load_inputs, safe_filename
+from ..pipeline.run import Run, RunInputs, demo_inputs, now
 from ..storage import repository as repo
+from .errors import data_issue
 from .signals import with_review_status
 
 router = APIRouter(prefix="/api")
+
+
+async def _read_upload(upload: UploadFile) -> bytes:
+    content = await upload.read(config.MAX_UPLOAD_MB * 1024 * 1024 + 1)
+    if len(content) > config.MAX_UPLOAD_MB * 1024 * 1024:
+        raise HTTPException(
+            413, {"errors": [{"file": upload.filename, "error": f"File is larger than {config.MAX_UPLOAD_MB} MB"}]}
+        )
+    return content
 
 
 def _run_or_404(run_id: str) -> dict:
@@ -25,7 +38,7 @@ def _run_or_404(run_id: str) -> dict:
     return r
 
 
-@router.post("/runs/demo")
+@router.post("/runs/demo", response_model=RunStarted)
 def start_demo():
     run = Run(demo_inputs()).start_async()
     return {"run_id": run.run_id, "status": run.status.status, "stages": STAGES}
@@ -34,7 +47,7 @@ def start_demo():
 async def _read_pdfs(files: list[UploadFile], errors: list[dict]) -> list[tuple[str, bytes]]:
     pdfs = []
     for f in files:
-        b = await f.read()
+        b = await _read_upload(f)
         if not (f.filename or "").lower().endswith(".pdf") or not b.startswith(b"%PDF"):
             errors.append({"file": f.filename, "error": "Not a PDF file"})
             continue
@@ -45,11 +58,11 @@ async def _read_pdfs(files: list[UploadFile], errors: list[dict]) -> list[tuple[
     return pdfs
 
 
-@router.post("/runs")
+@router.post("/runs", response_model=RunStarted)
 async def start_upload(sales_csv: UploadFile = File(...), invoices: list[UploadFile] | None = File(None)):
     """Supplier bills are optional: stock checks run on the sales file alone; margin checks need bills."""
     errors = []
-    csv_bytes = await sales_csv.read()
+    csv_bytes = await _read_upload(sales_csv)
     if len(csv_bytes) > config.MAX_UPLOAD_MB * 1024 * 1024:
         errors.append({"file": sales_csv.filename, "error": f"File is larger than {config.MAX_UPLOAD_MB} MB"})
     if not (sales_csv.filename or "").lower().endswith(".csv"):
@@ -60,24 +73,45 @@ async def start_upload(sales_csv: UploadFile = File(...), invoices: list[UploadF
     pdfs = await _read_pdfs(invoices or [], errors)
     if errors:
         raise HTTPException(422, {"errors": errors, "csv_summary": csv_check.summary, "warnings": csv_check.warnings})
-    run = Run(
-        RunInputs(mode="upload", csv_name=sales_csv.filename, csv_bytes=csv_bytes, pdfs=pdfs, store_name="Your store")
-    ).start_async()
+    try:
+        names = [safe_filename(sales_csv.filename), *[safe_filename(n) for n, _ in pdfs]]
+        if len(set(n.lower() for n in names)) != len(names):
+            raise ValueError("Uploaded filenames must be distinct after normalization")
+        run = Run(
+            RunInputs(
+                mode="upload",
+                csv_name=names[0],
+                csv_bytes=csv_bytes,
+                pdfs=list(zip(names[1:], [b for _, b in pdfs], strict=True)),
+                store_name="Your store",
+            )
+        ).start_async()
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from None
     return {"run_id": run.run_id, "status": run.status.status, "stages": STAGES}
 
 
-@router.post("/uploads/validate-csv")
+@router.post("/uploads/validate-csv", response_model=CsvValidationResponse)
 async def validate_csv(sales_csv: UploadFile = File(...)):
-    res = load_sales_csv(await sales_csv.read())
-    return {"ok": not res.errors, "errors": res.errors, "warnings": res.warnings, "summary": res.summary}
+    content = await _read_upload(sales_csv)
+    if not (sales_csv.filename or "").lower().endswith(".csv"):
+        raise HTTPException(422, {"errors": [{"file": sales_csv.filename, "error": "Expected a .csv file"}]})
+    res = load_sales_csv(content)
+    return {
+        "ok": not res.errors,
+        "errors": res.errors,
+        "warnings": res.warnings,
+        "summary": res.summary,
+        "issues": [data_issue(e, sales_csv.filename) for e in res.errors],
+    }
 
 
-@router.get("/runs/{run_id}")
+@router.get("/runs/{run_id}", response_model=RunResponse)
 def get_run(run_id: str):
     return _run_or_404(run_id)
 
 
-@router.get("/runs/{run_id}/signals")
+@router.get("/runs/{run_id}/signals", response_model=SignalsResponse)
 def list_signals(run_id: str):
     run = _run_or_404(run_id)
     sigs = [with_review_status(s) for s in repo.list_("signals", run["run_id"])]
@@ -99,6 +133,7 @@ def list_signals(run_id: str):
     return {
         "run_id": run["run_id"],
         "run_status": run["status"],
+        "issues": run.get("issues", []),
         "signals": [
             {
                 **{k: s[k] for k in summary_keys},
@@ -113,7 +148,7 @@ def list_signals(run_id: str):
     }
 
 
-@router.get("/runs/{run_id}/sources")
+@router.get("/runs/{run_id}/sources", response_model=SourcesResponse)
 def list_sources(run_id: str):
     run = _run_or_404(run_id)
     sources = repo.list_("sources", run["run_id"])
@@ -124,6 +159,11 @@ def list_sources(run_id: str):
         "sources": sources,
         "matches": repo.list_("matches", run["run_id"]),
         "invoices": repo.list_("invoices", run["run_id"]),
+        "original_invoices": repo.list_("original_invoices", run["run_id"]),
+        "products": repo.list_("products", run["run_id"]),
+        "issues": run.get("issues", []),
+        "invoice_corrections": (repo.get("inputs", run["run_id"], "manifest") or {}).get("invoice_corrections", {}),
+        "manual_matches": (repo.get("inputs", run["run_id"], "manifest") or {}).get("manual_matches", {}),
     }
 
 
@@ -133,40 +173,66 @@ def list_features(run_id: str):
     return {"run_id": run["run_id"], "features": repo.list_("features", run["run_id"])}
 
 
-class MatchDecisions(BaseModel):
-    decisions: dict[str, str | None]
+def _editable_inputs(run_id):
+    run = _run_or_404(run_id)
+    if run["status"] == "running":
+        raise HTTPException(409, "Wait for the current run to finish before retrying or correcting it")
+    try:
+        return run, load_inputs(run["run_id"])
+    except (ValueError, OSError):
+        raise HTTPException(409, "Retained inputs are unavailable; upload the files again") from None
 
 
-def _inputs_from_run(run: dict) -> RunInputs:
-    """Rebuild the inputs of an earlier run from its stored source files."""
-    if run["mode"] == "demo":
-        return demo_inputs()
-    rdir = repo.run_dir(run["run_id"])
-    sources = repo.list_("sources", run["run_id"])
-    csv_src = next(s for s in sources if s["type"] == "sales_csv")
-    pdfs = [(s["filename"], (rdir / s["filename"]).read_bytes()) for s in sources if s["type"] == "invoice_pdf"]
-    return RunInputs(
-        mode="upload",
-        csv_name=csv_src["filename"],
-        csv_bytes=(rdir / csv_src["filename"]).read_bytes(),
-        pdfs=pdfs,
-        store_name=run.get("store_name", "Your store"),
-    )
+def _start_child(inputs):
+    child = Run(inputs).start_async()
+    return {"run_id": child.run_id, "status": child.status.status, "stages": STAGES, "parent_run_id": inputs.parent_run_id}
 
 
-@router.post("/runs/{run_id}/matches")
+@router.post("/runs/{run_id}/retry", response_model=RunStarted)
+def retry_run(run_id: str):
+    _, inputs = _editable_inputs(run_id)
+    return _start_child(inputs)
+
+
+@router.post("/runs/{run_id}/matches", response_model=RunStarted)
 def confirm_matches(run_id: str, body: MatchDecisions):
-    """Store manual match decisions and re-run the analysis with them (new run id)."""
-    inp = _inputs_from_run(_run_or_404(run_id))
-    inp.manual_matches = body.decisions
-    new = Run(inp).start_async()
-    return {"run_id": new.run_id, "status": new.status.status}
+    run, inputs = _editable_inputs(run_id)
+    matches = repo.list_("matches", run["run_id"])
+    products = repo.list_("products", run["run_id"])
+    try:
+        validate_decisions(body.decisions, {m["line_description"] for m in matches}, products)
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from None
+    inputs.manual_matches.update(body.decisions)
+    return _start_child(inputs)
 
 
-@router.post("/runs/{run_id}/invoices")
+@router.put("/runs/{run_id}/invoices/{source_id}", response_model=RunStarted)
+def correct_invoice(run_id: str, source_id: str, body: InvoiceCorrection):
+    run, inputs = _editable_inputs(run_id)
+    src = repo.get("sources", run["run_id"], source_id)
+    if not src or src["type"] != "invoice_pdf":
+        raise HTTPException(404, "Invoice source not found")
+    content = dict(inputs.pdfs)[src["filename"]]
+    try:
+        rows, _ = read_pdf_rows(content)
+        corrected, warnings = _build(source_id, body.invoice.model_dump(mode="json"), rows, "manual", confirmed=True)
+    except Exception:
+        raise HTTPException(422, "The PDF cannot be read; replace it before correcting fields") from None
+    if corrected is None:
+        raise HTTPException(422, {"errors": [{"file": src["filename"], "error": w} for w in warnings]})
+    inputs.invoice_corrections[source_id] = {
+        "invoice": body.invoice.model_dump(mode="json"),
+        "reason": body.reason,
+        "confirmed_at": now().isoformat(),
+    }
+    return _start_child(inputs)
+
+
+@router.post("/runs/{run_id}/invoices", response_model=RunStarted)
 async def add_invoices(run_id: str, invoices: list[UploadFile] = File(...)):
     """Add supplier bills to an earlier analysis and re-run it with the same sales file (new run id)."""
-    run = _run_or_404(run_id)
+    run, inp = _editable_inputs(run_id)
     if run["mode"] == "demo":
         raise HTTPException(422, "The sample store already includes its supplier bills")
     errors: list[dict] = []
@@ -175,11 +241,15 @@ async def add_invoices(run_id: str, invoices: list[UploadFile] = File(...)):
         raise HTTPException(422, {"errors": errors})
     if not new_pdfs:
         raise HTTPException(422, {"errors": [{"file": None, "error": "Choose at least one supplier bill PDF"}]})
-    inp = _inputs_from_run(run)
-    existing = {name for name, _ in inp.pdfs}
-    inp.pdfs += [(name, b) for name, b in new_pdfs if name not in existing]
-    new = Run(inp).start_async()
-    return {"run_id": new.run_id, "status": new.status.status, "bills": len(inp.pdfs)}
+    try:
+        new_pdfs = [(safe_filename(name), content) for name, content in new_pdfs]
+        names = [inp.csv_name, *[name for name, _ in inp.pdfs], *[name for name, _ in new_pdfs]]
+        if len({name.lower() for name in names}) != len(names):
+            raise ValueError("Uploaded filenames must be distinct after normalization")
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from None
+    inp.pdfs += new_pdfs
+    return _start_child(inp)
 
 
 @router.get("/sources/{run_id}/{source_id}/page/{page}.png")
@@ -187,6 +257,8 @@ def page_image(run_id: str, source_id: str, page: int, highlight: str | None = N
     src = repo.get("sources", run_id, source_id)
     if not src or src["type"] != "invoice_pdf":
         raise HTTPException(404, "Invoice not found")
+    if page < 1:
+        raise HTTPException(404, "Page numbers start at one")
     path = src["summary"].get("path")
     try:
         doc = pymupdf.open(path)
@@ -203,6 +275,7 @@ def page_image(run_id: str, source_id: str, page: int, highlight: str | None = N
         except ValueError:
             raise HTTPException(400, "highlight must be x0,y0,x1,y1") from None
     png = pg.get_pixmap(dpi=110).tobytes("png")
+    doc.close()
     return Response(png, media_type="image/png", headers={"Cache-Control": "no-store"})
 
 

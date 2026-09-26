@@ -14,6 +14,7 @@ from .. import config
 from ..safety.policy import prohibited_phrases
 from ..storage import repository as repo
 from . import llm
+from .claims import validate_claims
 from .run import Run, demo_inputs
 
 
@@ -129,6 +130,8 @@ def run_evaluation(data_dir: Path | None = None, persist: bool = True) -> dict:
     # Evidence completeness and safety
     claims = sum(len(s["evidence_ids"]) for s in signals)
     resolved = sum(1 for s in signals for e in s["evidence_ids"] if e in evidence)
+    claim_total = sum(len(s["claims"]) for s in signals)
+    claim_valid = sum(len(s["claims"]) for s in signals if not validate_claims(s, evidence, s["facts"]))
     violations = []
     for s in signals:
         for k in ("title", "observation", "interpretation", "next_check"):
@@ -167,6 +170,11 @@ def run_evaluation(data_dir: Path | None = None, persist: bool = True) -> dict:
                 "value": round(none_ok / len(expected_none), 3) if expected_none else 1.0,
                 "count": f"{none_ok} of {len(expected_none)}",
             },
+            "claim_coverage": {
+                "value": round(claim_valid / claim_total, 3) if claim_total else 0.0,
+                "count": f"{claim_valid} of {claim_total}",
+                "target": "1.0",
+            },
             "evidence_completeness": {
                 "value": round(resolved / claims, 3) if claims else 0.0,
                 "count": f"{resolved} of {claims}",
@@ -204,6 +212,8 @@ def run_evaluation(data_dir: Path | None = None, persist: bool = True) -> dict:
         and fields_ok / fields_total >= 0.95
         and (acc_ok / len(accepted) if accepted else 0) >= 0.9
         and resolved == claims
+        and claim_total > 0
+        and claim_valid == claim_total
         and decoys_rejected >= 1
         and decoys_escalated <= 1
         and not violations

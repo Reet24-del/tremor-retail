@@ -108,12 +108,13 @@ def normalize(text: str) -> str:
 
 
 _embedder = None
+_embedding_failed = False
 
 
 def _semantic(a: str, b: str) -> float:
     """0-100. Embeddings if enabled, otherwise lexicon-normalized token similarity."""
-    global _embedder
-    if os.getenv("TREMOR_EMBEDDINGS") == "1":
+    global _embedder, _embedding_failed
+    if os.getenv("TREMOR_EMBEDDINGS") == "1" and not _embedding_failed:
         try:
             if _embedder is None:
                 from sentence_transformers import SentenceTransformer
@@ -122,7 +123,7 @@ def _semantic(a: str, b: str) -> float:
             va, vb = _embedder.encode([a, b], normalize_embeddings=True)
             return float((va * vb).sum()) * 100
         except Exception:
-            pass
+            _embedding_failed = True
     return float(fuzz.token_set_ratio(normalize(a), normalize(b)))
 
 
@@ -198,16 +199,39 @@ def match_line(desc: str, products: list[dict]) -> ProductMatch:
     )
 
 
+def validate_decisions(decisions: dict, descriptions: set[str], products: list[dict]) -> None:
+    names = {p["product_id"]: p["product_name"] for p in products}
+    if not decisions:
+        raise ValueError("Provide at least one match decision")
+    for desc, pid in decisions.items():
+        if desc not in descriptions:
+            raise ValueError("Match description is not part of this run")
+        if pid is None:
+            continue
+        if pid not in names:
+            raise ValueError("Product ID is not in this run's product catalogue")
+        a, b = size_of(desc), size_of(names[pid])
+        if a is not None and b is not None and a != b:
+            raise ValueError("Package sizes or units conflict; no conversion evidence was supplied")
+
+
 def match_all(
     descriptions: list[str],
     products: list[dict],
     frozen: dict[str, str | None] | None = None,
     manual: dict[str, str | None] | None = None,
 ) -> dict[str, ProductMatch]:
+    if manual:
+        validate_decisions(manual, set(descriptions), products)
     out = {}
     names = {p["product_id"]: p["product_name"] for p in products}
     for d in sorted(set(descriptions)):
         m = match_line(d, products)
+        m.semantic_backend = (
+            ("fallback_lexicon" if _embedding_failed else "sentence_transformers")
+            if os.getenv("TREMOR_EMBEDDINGS") == "1"
+            else "lexicon"
+        )
         override = (manual or {}).get(d, "__none__")
         if override != "__none__":
             m = m.model_copy(

@@ -1,0 +1,421 @@
+{
+  "signal": {
+    "signal_id": "sig_6284ac_margin_sku_oil_1l",
+    "run_id": "run_20260926_082816_6284ac",
+    "signal_type": "margin_leakage",
+    "status": "new",
+    "severity": "high",
+    "evidence_strength": 1.0,
+    "evidence_strength_components": {
+      "extraction_confidence": 0.99,
+      "match_confidence": 1.0,
+      "source_corroboration": 1.0,
+      "data_completeness": 1.0,
+      "anomaly_strength": 1.0
+    },
+    "entity": {
+      "type": "product",
+      "id": "SKU-OIL-1L",
+      "display_name": "Sunpure Cooking Oil 1 L"
+    },
+    "title": "Sunpure Cooking Oil 1 L: margin leakage requires review",
+    "observation": "The supplier cost rose from INR 118 to INR 132 on invoice SW-184 (10 Sep 2026) while the average selling price stayed near INR 135. Gross margin fell from 12.6 percent to 2.2 percent.",
+    "financial_impact": {
+      "amount": 1680.0,
+      "currency": "INR",
+      "label": "estimated margin leakage",
+      "method": "120 units sold since 10 Sep 2026 x INR 14 increase in unit cost"
+    },
+    "interpretation": "The shop may now be selling this product at a margin too small to cover its other costs. A 12 unit stock difference was also counted, which may add further loss. It does not show why the units are missing.",
+    "evidence_ids": [
+      "ev_6284ac_margin_sku_oil_1l_old_invoice",
+      "ev_6284ac_margin_sku_oil_1l_new_invoice",
+      "ev_6284ac_margin_sku_oil_1l_sales_rows",
+      "ev_6284ac_margin_sku_oil_1l_sales_before",
+      "ev_6284ac_margin_sku_oil_1l_calculation",
+      "ev_6284ac_margin_sku_oil_1l_stock_calc",
+      "ev_6284ac_margin_sku_oil_1l_calendar"
+    ],
+    "rejected_explanations": [
+      {
+        "name": "a temporary promotion",
+        "reason": "The only recorded promotion ended on 5 Jul 2026, before the cost change, and the selling price has stayed at INR 135 since.",
+        "evidence_ids": [
+          "ev_6284ac_margin_sku_oil_1l_sales_rows",
+          "ev_6284ac_margin_sku_oil_1l_calendar"
+        ]
+      },
+      {
+        "name": "the selling price already covering it",
+        "reason": "The average selling price was INR 135 after the new cost arrived.",
+        "evidence_ids": [
+          "ev_6284ac_margin_sku_oil_1l_sales_rows"
+        ]
+      },
+      {
+        "name": "too few sales to matter",
+        "reason": "The product kept selling about 8.0 units a day after the change, so the smaller margin applies to steady volume.",
+        "evidence_ids": [
+          "ev_6284ac_margin_sku_oil_1l_sales_rows"
+        ]
+      }
+    ],
+    "limitations": [
+      "Synthetic demo data",
+      "Excludes tax, delivery charges, rebates and damaged stock unless recorded in the files",
+      "Estimated amounts compare with the prior purchase cost; they are not an accounting loss",
+      "Invoice fields come from cached validated extraction (verified against the PDF text)"
+    ],
+    "next_check": "Verify the latest supplier rate with Shakti Wholesale, recount the 12 unit stock difference and review whether the selling price should be updated.",
+    "facts": {
+      "prior_unit_cost": 118.0,
+      "latest_unit_cost": 132.0,
+      "unit_cost_increase": 14.0,
+      "cost_change_percent": 11.9,
+      "average_selling_price_before": 135.0,
+      "average_selling_price_after": 135.0,
+      "prior_margin_percent": 12.6,
+      "current_margin_percent": 2.2,
+      "margin_drop_points": 10.4,
+      "units_sold_after_cost_change": 120.0,
+      "estimated_margin_leakage": 1680.0,
+      "formulas": [
+        "margin_percent = (selling_price - unit_cost) / selling_price x 100",
+        "estimated_margin_leakage = units_sold_after_cost_change x max(0, latest_unit_cost - prior_unit_cost)"
+      ],
+      "product": "Sunpure Cooking Oil 1 L",
+      "supplier": "Shakti Wholesale",
+      "latest_invoice": "SW-184",
+      "latest_invoice_date": "10 Sep 2026",
+      "prior_invoice": "SW-151",
+      "prior_invoice_date": "5 Aug 2026",
+      "stock_variance_units": -12.0,
+      "stock_variance_dates": [
+        "18 Sep 2026"
+      ],
+      "price_changes_after_cost_change": [],
+      "promotions": [
+        {
+          "start": "1 Jul 2026",
+          "end": "5 Jul 2026",
+          "price": 129
+        }
+      ],
+      "revenue_share_percent": 9.1,
+      "units_per_day": 8.0
+    },
+    "ranking": {
+      "anomaly_score": 11.86,
+      "anomaly_norm": 1.0,
+      "impact_inr": 1680.0,
+      "impact_norm": 1.0,
+      "corroboration": 1.0,
+      "data_confidence": 0.995,
+      "rank_score": 0.9995
+    },
+    "model_metadata": {
+      "detector_version": "demo-v1",
+      "prompt_version": "signal-v1",
+      "model_name": "none (deterministic fallback)",
+      "explanation_source": "template",
+      "extraction_method": "cached"
+    },
+    "claims": [
+      {
+        "claim_id": "title_1",
+        "field": "title",
+        "text": "Sunpure Cooking Oil 1 L: margin leakage requires review",
+        "kind": "interpretation",
+        "evidence_ids": [
+          "ev_6284ac_margin_sku_oil_1l_old_invoice",
+          "ev_6284ac_margin_sku_oil_1l_new_invoice",
+          "ev_6284ac_margin_sku_oil_1l_sales_rows",
+          "ev_6284ac_margin_sku_oil_1l_sales_before",
+          "ev_6284ac_margin_sku_oil_1l_calculation"
+        ]
+      },
+      {
+        "claim_id": "observation_1",
+        "field": "observation",
+        "text": "The supplier cost rose from INR 118 to INR 132 on invoice SW-184 (10 Sep 2026) while the average selling price stayed near INR 135.",
+        "kind": "observation",
+        "evidence_ids": [
+          "ev_6284ac_margin_sku_oil_1l_old_invoice",
+          "ev_6284ac_margin_sku_oil_1l_new_invoice",
+          "ev_6284ac_margin_sku_oil_1l_sales_rows",
+          "ev_6284ac_margin_sku_oil_1l_sales_before",
+          "ev_6284ac_margin_sku_oil_1l_calculation"
+        ]
+      },
+      {
+        "claim_id": "observation_2",
+        "field": "observation",
+        "text": "Gross margin fell from 12.6 percent to 2.2 percent.",
+        "kind": "observation",
+        "evidence_ids": [
+          "ev_6284ac_margin_sku_oil_1l_old_invoice",
+          "ev_6284ac_margin_sku_oil_1l_new_invoice",
+          "ev_6284ac_margin_sku_oil_1l_sales_rows",
+          "ev_6284ac_margin_sku_oil_1l_sales_before",
+          "ev_6284ac_margin_sku_oil_1l_calculation"
+        ]
+      },
+      {
+        "claim_id": "interpretation_1",
+        "field": "interpretation",
+        "text": "The shop may now be selling this product at a margin too small to cover its other costs.",
+        "kind": "interpretation",
+        "evidence_ids": [
+          "ev_6284ac_margin_sku_oil_1l_old_invoice",
+          "ev_6284ac_margin_sku_oil_1l_new_invoice",
+          "ev_6284ac_margin_sku_oil_1l_sales_rows",
+          "ev_6284ac_margin_sku_oil_1l_sales_before",
+          "ev_6284ac_margin_sku_oil_1l_calculation"
+        ]
+      },
+      {
+        "claim_id": "interpretation_2",
+        "field": "interpretation",
+        "text": "A 12 unit stock difference was also counted, which may add further loss.",
+        "kind": "interpretation",
+        "evidence_ids": [
+          "ev_6284ac_margin_sku_oil_1l_old_invoice",
+          "ev_6284ac_margin_sku_oil_1l_new_invoice",
+          "ev_6284ac_margin_sku_oil_1l_stock_calc"
+        ]
+      },
+      {
+        "claim_id": "interpretation_3",
+        "field": "interpretation",
+        "text": "It does not show why the units are missing.",
+        "kind": "interpretation",
+        "evidence_ids": [
+          "ev_6284ac_margin_sku_oil_1l_old_invoice",
+          "ev_6284ac_margin_sku_oil_1l_new_invoice",
+          "ev_6284ac_margin_sku_oil_1l_stock_calc"
+        ]
+      },
+      {
+        "claim_id": "next_check_1",
+        "field": "next_check",
+        "text": "Verify the latest supplier rate with Shakti Wholesale, recount the 12 unit stock difference and review whether the selling price should be updated.",
+        "kind": "recommendation",
+        "evidence_ids": [
+          "ev_6284ac_margin_sku_oil_1l_old_invoice",
+          "ev_6284ac_margin_sku_oil_1l_new_invoice",
+          "ev_6284ac_margin_sku_oil_1l_stock_calc"
+        ]
+      },
+      {
+        "claim_id": "financial_impact",
+        "field": "financial_impact.method",
+        "text": "120 units sold since 10 Sep 2026 x INR 14 increase in unit cost",
+        "kind": "observation",
+        "evidence_ids": [
+          "ev_6284ac_margin_sku_oil_1l_old_invoice",
+          "ev_6284ac_margin_sku_oil_1l_new_invoice",
+          "ev_6284ac_margin_sku_oil_1l_sales_rows",
+          "ev_6284ac_margin_sku_oil_1l_sales_before",
+          "ev_6284ac_margin_sku_oil_1l_calculation",
+          "ev_6284ac_margin_sku_oil_1l_stock_calc",
+          "ev_6284ac_margin_sku_oil_1l_calendar"
+        ]
+      },
+      {
+        "claim_id": "alternative_1_1",
+        "field": "rejected_explanations.0.reason",
+        "text": "The only recorded promotion ended on 5 Jul 2026, before the cost change, and the selling price has stayed at INR 135 since.",
+        "kind": "observation",
+        "evidence_ids": [
+          "ev_6284ac_margin_sku_oil_1l_sales_rows",
+          "ev_6284ac_margin_sku_oil_1l_calendar"
+        ]
+      },
+      {
+        "claim_id": "alternative_2_1",
+        "field": "rejected_explanations.1.reason",
+        "text": "The average selling price was INR 135 after the new cost arrived.",
+        "kind": "observation",
+        "evidence_ids": [
+          "ev_6284ac_margin_sku_oil_1l_sales_rows"
+        ]
+      },
+      {
+        "claim_id": "alternative_3_1",
+        "field": "rejected_explanations.2.reason",
+        "text": "The product kept selling about 8.0 units a day after the change, so the smaller margin applies to steady volume.",
+        "kind": "observation",
+        "evidence_ids": [
+          "ev_6284ac_margin_sku_oil_1l_sales_rows"
+        ]
+      }
+    ]
+  },
+  "evidence": {
+    "ev_6284ac_margin_sku_oil_1l_old_invoice": {
+      "evidence_id": "ev_6284ac_margin_sku_oil_1l_old_invoice",
+      "source_id": "src_sw_151_94b1e88f",
+      "source_type": "invoice_pdf",
+      "label": "Earlier invoice SW-151 (5 Aug 2026): Shakti Wholesale",
+      "locator": {
+        "line_id": "src_sw_151_94b1e88f:line_01",
+        "page": 1,
+        "bbox": [
+          52.6,
+          200.3,
+          542.6,
+          212.7
+        ],
+        "source_text": "1 SUNPURE OIL 1 LTR 320 bottle 118.00 37,760.00"
+      }
+    },
+    "ev_6284ac_margin_sku_oil_1l_new_invoice": {
+      "evidence_id": "ev_6284ac_margin_sku_oil_1l_new_invoice",
+      "source_id": "src_sw_184_bda8a042",
+      "source_type": "invoice_pdf",
+      "label": "Latest invoice SW-184 (10 Sep 2026): Shakti Wholesale",
+      "locator": {
+        "line_id": "src_sw_184_bda8a042:line_01",
+        "page": 1,
+        "bbox": [
+          52.6,
+          200.3,
+          542.6,
+          212.7
+        ],
+        "source_text": "1 SUNPURE OIL 1 LTR 210 bottle 132.00 27,720.00"
+      }
+    },
+    "ev_6284ac_margin_sku_oil_1l_sales_rows": {
+      "evidence_id": "ev_6284ac_margin_sku_oil_1l_sales_rows",
+      "source_id": "src_sales_stock",
+      "source_type": "sales_csv",
+      "label": "Sales rows since 10 Sep 2026 (15 days)",
+      "locator": {
+        "rows": [
+          2572,
+          2606,
+          2640,
+          2674,
+          2708,
+          2742,
+          2776,
+          2810,
+          2844,
+          2878,
+          2912,
+          2946,
+          2980,
+          3014,
+          3048
+        ],
+        "columns": [
+          "transaction_date",
+          "product_name",
+          "quantity_sold",
+          "unit_selling_price",
+          "opening_stock",
+          "closing_stock",
+          "recorded_damage",
+          "recorded_returns"
+        ]
+      }
+    },
+    "ev_6284ac_margin_sku_oil_1l_sales_before": {
+      "evidence_id": "ev_6284ac_margin_sku_oil_1l_sales_before",
+      "source_id": "src_sales_stock",
+      "source_type": "sales_csv",
+      "label": "Sales rows between the two invoices (36 days)",
+      "locator": {
+        "rows": [
+          1348,
+          1382,
+          1416,
+          1450,
+          1484,
+          1518,
+          1552,
+          1586,
+          1620,
+          1654,
+          1688,
+          1722,
+          1756,
+          1790,
+          1824,
+          1858,
+          1892,
+          1926,
+          1960,
+          1994,
+          2028,
+          2062,
+          2096,
+          2130,
+          2164,
+          2198,
+          2232,
+          2266,
+          2300,
+          2334,
+          2368,
+          2402,
+          2436,
+          2470,
+          2504,
+          2538
+        ],
+        "columns": [
+          "transaction_date",
+          "product_name",
+          "quantity_sold",
+          "unit_selling_price",
+          "opening_stock",
+          "closing_stock",
+          "recorded_damage",
+          "recorded_returns"
+        ]
+      }
+    },
+    "ev_6284ac_margin_sku_oil_1l_calculation": {
+      "evidence_id": "ev_6284ac_margin_sku_oil_1l_calculation",
+      "source_id": "calc",
+      "source_type": "calculation",
+      "label": "Deterministic margin calculation",
+      "locator": {
+        "formula_version": "demo-v1"
+      }
+    },
+    "ev_6284ac_margin_sku_oil_1l_stock_calc": {
+      "evidence_id": "ev_6284ac_margin_sku_oil_1l_stock_calc",
+      "source_id": "src_sales_stock",
+      "source_type": "sales_csv",
+      "label": "Stock count difference on 18 Sep 2026",
+      "locator": {
+        "rows": [
+          2844
+        ],
+        "columns": [
+          "transaction_date",
+          "product_name",
+          "quantity_sold",
+          "unit_selling_price",
+          "opening_stock",
+          "closing_stock",
+          "recorded_damage",
+          "recorded_returns"
+        ]
+      }
+    },
+    "ev_6284ac_margin_sku_oil_1l_calendar": {
+      "evidence_id": "ev_6284ac_margin_sku_oil_1l_calendar",
+      "source_id": "calendar",
+      "source_type": "calendar",
+      "label": "Store promotion calendar",
+      "locator": {
+        "product_id": "SKU-OIL-1L"
+      }
+    }
+  },
+  "reviews": []
+}

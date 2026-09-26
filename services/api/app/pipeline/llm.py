@@ -78,7 +78,7 @@ def extract_invoice(document_text: str) -> dict:
 
 EXPLAIN_SYSTEM = """You write short, plain-language explanations for a neighbourhood grocery shop owner.
 You receive validated facts. Rules:
-- Use ONLY numbers that appear in the facts. Never calculate new numbers.
+- Select one exact string per field from approved_wording. Never introduce new wording or numbers.
 - Observation = factual. Interpretation uses may/could/requires review.
 - Never accuse anyone, never say theft or fraud, never tell the owner to change a price or deny credit.
 - next_check must be something a human verifies.

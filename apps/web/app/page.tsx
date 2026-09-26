@@ -2,98 +2,127 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import RupeeCoin from "@/components/RupeeCoin";
+import { useEffect, useRef, useState } from "react";
+import MarginTerrain from "@/components/MarginTerrain";
 import { Wordmark } from "@/components/AppShell";
 import { api } from "@/lib/api";
 import { LangToggle, useLang } from "@/lib/i18n";
 import { useRun } from "@/lib/run-context";
 
 /*
- * Landing page. Short on purpose: one headline, one sentence, one action. The EN / हिंदी toggle
- * switches the whole page; a single line in the other language sits under the headline so both
- * audiences know the product speaks their language.
- *
- * Proof numbers come from the stress test (docs/stress-test.md) and the bundled demo store.
+ * Landing page. The picture is the product's own data: the demo store's 90 days of margin, with the
+ * leaks Tremor finds lit up. Copy is short and the EN / हिंदी toggle switches the whole page.
+ * Proof numbers come from docs/stress-test.md and the bundled demo store.
  */
 const COPY = {
   en: {
-    eyebrow: "Profit-leakage intelligence for kirana stores",
-    h1a: "Find the rupees your shop is ",
-    h1b: "quietly losing.",
-    alt: "आपकी दुकान का छुपा हुआ नुकसान, सबूत के साथ।",
-    lede: "Upload your sales file. Tremor finds where margin and stock slip away and shows the exact row behind every number.",
+    kicker: "Tremor Retail · for kirana stores",
+    h1: "See where your margin quietly goes.",
+    lede: "Leak detection for kirana stores, with the exact row or bill line behind every rupee.",
     run: "Run the sample store",
     starting: "Starting…",
     upload: "Upload my files",
     open: "Open app",
-    proof: [
-      ["98.5%", "recall on 50 random test stores"],
-      ["98.0%", "precision on the same stores"],
-      ["₹5,495", "flagged in the demo store, with proof"],
+    terrain: {
+      legend: "Each line is one product's daily gross profit, 90 days",
+      flagged: "Where Tremor found a leak",
+      hero: "Sunpure Oil 1 L · margin 12.6% → 2.2% · ₹1,680",
+    },
+    sigKicker: "What you get",
+    sigH: "A lead, not a verdict.",
+    sigP: "Every signal says what changed, what it may mean and what to check next. The numbers are computed, never written by the AI, and a stock gap is never called theft.",
+    card: {
+      sev: "High severity",
+      title: "Sunpure Cooking Oil 1 L: margin leakage requires review",
+      obs: "Supplier cost rose from ₹118 to ₹132 on invoice SW-184 (10 Sep) while the shelf price stayed at ₹135. Margin fell from 12.6% to 2.2%.",
+      next: "Next: verify the latest rate with Shakti Wholesale and recount 12 units.",
+      amt: "₹1,680",
+      amtLabel: "estimated margin leakage",
+      ev: ["Invoice SW-184, page 1", "Sales rows since 10 Sep", "Stock count, 18 Sep"],
+    },
+    howH: "How it works",
+    how: [
+      ["Upload", "A sales and stock CSV is enough. Supplier PDFs are optional and unlock margin checks."],
+      ["Match", "Bill lines are matched to your products by name and pack size. Unsure matches wait for you."],
+      ["Check", "Unusual changes are ranked by rupees at stake, then tested against festivals, bulk orders and price changes."],
+      ["Review", "You confirm or dismiss each lead. Tremor never changes a price, a credit limit or your stock."],
     ],
-    featH: "Leads you can check in five minutes. Never accusations.",
-    feats: [
-      ["₹", "Stock that does not add up", "Your sales and stock CSV alone is enough to spot units that go missing.", "CSV only"],
-      ["↗", "Costs eating your margin", "Add supplier bills and Tremor catches price rises you did not pass on.", "Bills optional"],
-      ["✓", "Proof for every number", "Every figure links to the CSV row or bill line it came from. In English or Hindi.", "EN · हिंदी"],
-    ],
-    ctaH: "See it on a real-looking store",
-    ctaP: "90 days of synthetic grocery data. Results in under a minute.",
-    foot: "Team Three Musketeers · Hack-e-Awadh 2026",
-    synthetic: "Demo numbers are synthetic",
+    proof: "We tested Tremor on 50 stores it had never seen. It found 98.5% of the hidden leaks, and 98% of what it flagged was real.",
+    proofLink: "Read how we tested",
+    foot: "Team Three Musketeers · Hack-e-Awadh 2026 · demo data is synthetic",
   },
   hi: {
-    eyebrow: "किराना दुकानों के लिए मुनाफ़े की जाँच",
-    h1a: "आपकी दुकान का जो मुनाफ़ा ",
-    h1b: "चुपचाप रिस रहा है, उसे पकड़िए।",
-    alt: "Find the rupees your shop is quietly losing.",
-    lede: "अपनी सेल्स फ़ाइल अपलोड करें। Tremor बताता है कि मार्जिन और स्टॉक कहाँ घट रहा है, और हर आँकड़े के पीछे की पंक्ति दिखाता है।",
+    kicker: "Tremor Retail · किराना दुकानों के लिए",
+    h1: "देखिए आपका मार्जिन चुपचाप कहाँ जा रहा है।",
+    lede: "किराना दुकानों के लिए रिसाव की जाँच, हर रुपये के पीछे की पंक्ति या बिल लाइन के साथ।",
     run: "सैंपल दुकान चलाएँ",
     starting: "शुरू हो रहा है…",
     upload: "अपनी फ़ाइलें अपलोड करें",
     open: "ऐप खोलें",
-    proof: [
-      ["98.5%", "50 रैंडम टेस्ट दुकानों पर रिकॉल"],
-      ["98.0%", "उन्हीं दुकानों पर प्रिसिज़न"],
-      ["₹5,495", "डेमो दुकान में सबूत के साथ पकड़ा गया"],
+    terrain: {
+      legend: "हर लाइन एक प्रोडक्ट का 90 दिन का रोज़ का मुनाफ़ा है",
+      flagged: "जहाँ Tremor को रिसाव मिला",
+      hero: "Sunpure Oil 1 L · मार्जिन 12.6% → 2.2% · ₹1,680",
+    },
+    sigKicker: "आपको क्या मिलता है",
+    sigH: "एक सुराग, फ़ैसला नहीं।",
+    sigP: "हर संकेत बताता है कि क्या बदला, इसका क्या मतलब हो सकता है और आगे क्या जाँचना है। आँकड़े गणना से आते हैं, AI उन्हें नहीं लिखता, और स्टॉक के अंतर को कभी चोरी नहीं कहा जाता।",
+    card: {
+      sev: "ज़्यादा गंभीर",
+      title: "Sunpure Cooking Oil 1 L: मार्जिन लीकेज की जाँच ज़रूरी",
+      obs: "बिल SW-184 (10 Sep) पर सप्लायर की लागत ₹118 से ₹132 हो गई, जबकि दाम ₹135 ही रहा। मार्जिन 12.6% से घटकर 2.2% रह गया।",
+      next: "अगला कदम: Shakti Wholesale से नया रेट पक्का करें और 12 यूनिट दोबारा गिनें।",
+      amt: "₹1,680",
+      amtLabel: "अनुमानित मार्जिन लीकेज",
+      ev: ["बिल SW-184, पेज 1", "10 Sep से बिक्री की पंक्तियाँ", "18 Sep की स्टॉक गिनती"],
+    },
+    howH: "कैसे काम करता है",
+    how: [
+      ["अपलोड", "सेल्स और स्टॉक CSV काफ़ी है। सप्लायर की PDF वैकल्पिक हैं, उनसे मार्जिन की जाँच होती है।"],
+      ["मिलान", "बिल की लाइनें नाम और पैक साइज़ से आपके प्रोडक्ट से मिलाई जाती हैं। शक वाले मिलान आपके पास आते हैं।"],
+      ["जाँच", "असामान्य बदलाव दाँव पर लगे रुपयों से क्रम में आते हैं, फिर त्योहार, थोक ऑर्डर और दाम बदलाव से परखे जाते हैं।"],
+      ["समीक्षा", "हर सुराग को आप पक्का या खारिज करते हैं। Tremor कभी दाम, उधार या स्टॉक नहीं बदलता।"],
     ],
-    featH: "ऐसे सुराग जिन्हें आप पाँच मिनट में जाँच सकें। कभी इल्ज़ाम नहीं।",
-    feats: [
-      ["₹", "स्टॉक जो मेल नहीं खाता", "गायब होते यूनिट पकड़ने के लिए सिर्फ़ आपकी सेल्स और स्टॉक CSV काफ़ी है।", "सिर्फ़ CSV"],
-      ["↗", "मार्जिन खाती लागत", "सप्लायर के बिल जोड़ें, Tremor वो बढ़े दाम पकड़ेगा जो आपने आगे नहीं बढ़ाए।", "बिल वैकल्पिक"],
-      ["✓", "हर आँकड़े का सबूत", "हर संख्या उस CSV पंक्ति या बिल लाइन से जुड़ी है जहाँ से वह आई। हिंदी या अंग्रेज़ी में।", "EN · हिंदी"],
-    ],
-    ctaH: "असली जैसी दुकान पर देखें",
-    ctaP: "90 दिन का सिंथेटिक किराना डेटा। एक मिनट से कम में नतीजे।",
-    foot: "Team Three Musketeers · Hack-e-Awadh 2026",
-    synthetic: "डेमो के आँकड़े सिंथेटिक हैं",
+    proof: "हमने Tremor को 50 ऐसी दुकानों पर परखा जिन्हें इसने पहले नहीं देखा था। इसने 98.5% छुपे रिसाव पकड़े, और जो पकड़ा उसमें 98% सही निकला।",
+    proofLink: "हमने कैसे परखा",
+    foot: "Team Three Musketeers · Hack-e-Awadh 2026 · डेमो डेटा सिंथेटिक है",
   },
 } as const;
 
-function useReveal() {
+/** A sentence whose words brighten one by one as it scrolls through the viewport. */
+function RevealText({ text }: { text: string }) {
+  const ref = useRef<HTMLParagraphElement>(null);
   useEffect(() => {
-    const els = Array.from(document.querySelectorAll<HTMLElement>(".reveal"));
-    if (!("IntersectionObserver" in window)) {
-      els.forEach((e) => e.classList.add("in"));
-      return;
-    }
-    const io = new IntersectionObserver((entries) => entries.forEach((en) => en.isIntersecting && en.target.classList.add("in")),
-      { rootMargin: "0px 0px -8% 0px" });
-    els.forEach((e) => io.observe(e));
-    return () => io.disconnect();
-  }, []);
+    const el = ref.current;
+    if (!el) return;
+    const words = Array.from(el.querySelectorAll<HTMLElement>(".w"));
+    const onScroll = () => {
+      const r = el.getBoundingClientRect();
+      const vh = window.innerHeight;
+      const progress = Math.min(1, Math.max(0, (vh * 0.85 - r.top) / (r.height + vh * 0.35)));
+      const lit = Math.round(progress * words.length);
+      words.forEach((w, i) => w.classList.toggle("on", i < lit));
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [text]);
+  return (
+    <p ref={ref}>
+      {text.split(" ").map((w, i) => <span key={i} className="w">{w} </span>)}
+    </p>
+  );
 }
+
+const STRESS_DOC = "https://github.com/Reet24-del/tremor-retail/blob/main/docs/stress-test.md";
 
 export default function Landing() {
   const router = useRouter();
   const { setRunId } = useRun();
   const { lang } = useLang();
   const c = COPY[lang];
-  const other = lang === "en" ? "hi" : "en";
   const [starting, setStarting] = useState(false);
   const [err, setErr] = useState<string | null>(null);
-  useReveal();
 
   const startDemo = async () => {
     setStarting(true);
@@ -115,66 +144,63 @@ export default function Landing() {
           <Wordmark />
           <div className="row">
             <LangToggle compact />
-            <Link className="btn btn-sm" href="/dashboard">{c.open}</Link>
+            <Link className="l-open" href="/dashboard">{c.open} →</Link>
           </div>
         </div>
       </nav>
 
-      <header className="hero">
-        <div className="hero-glow" />
-        <div className="hero-grid" />
-        <div className="l-wrap hero-in">
-          <div>
-            <span className="eyebrow"><i aria-hidden="true" />{c.eyebrow}</span>
-            <h1>{c.h1a}<em>{c.h1b}</em></h1>
-            <p className="tagline-alt" lang={other}>{c.alt}</p>
-            <p className="lede">{c.lede}</p>
-            <div className="hero-cta">
-              <button className="btn btn-primary btn-lg" onClick={startDemo} disabled={starting}>{starting ? c.starting : c.run}</button>
-              <Link className="btn btn-lg" href="/upload">{c.upload}</Link>
-            </div>
-            {err && <div className="alert alert-error" style={{ marginTop: 14, maxWidth: 500 }}>{err}</div>}
-          </div>
-          <RupeeCoin />
+      <header className="l-wrap hero">
+        <p className="kicker">{c.kicker}</p>
+        <h1>{c.h1}</h1>
+        <p className="lede">{c.lede}</p>
+        <div className="hero-cta">
+          <button className="btn btn-primary btn-lg" onClick={startDemo} disabled={starting}>{starting ? c.starting : c.run}</button>
+          <Link className="text-link" href="/upload">{c.upload} →</Link>
         </div>
+        {err && <div className="alert alert-error" style={{ marginTop: 14, maxWidth: 520, marginInline: "auto" }}>{err}</div>}
       </header>
 
-      <section className="proof" aria-label="Results">
-        <div className="l-wrap proof-in">
-          {c.proof.map(([n, label]) => (
-            <div key={label} className="proof-item reveal"><b>{n}</b><span>{label}</span></div>
-          ))}
-        </div>
+      <div className="l-wrap-wide">
+        <MarginTerrain caption={c.terrain} />
+      </div>
+
+      <section className="l-wrap statement" aria-label="Results">
+        <RevealText text={c.proof} />
+        <a href={STRESS_DOC} target="_blank" rel="noreferrer">{c.proofLink} ↗</a>
       </section>
 
-      <section className="features l-wrap" aria-labelledby="feat-h">
-        <h2 id="feat-h" className="reveal">{c.featH}</h2>
-        <div className="feature-grid">
-          {c.feats.map(([icon, h, p, tag]) => (
-            <article key={h} className="feature reveal">
-              <div className="feature-icon" aria-hidden="true">{icon}</div>
-              <h3>{h}</h3>
-              <p>{p}</p>
-              <span className="tag">{tag}</span>
-            </article>
-          ))}
+      <section className="l-wrap l-section sig-section" aria-labelledby="sig-h">
+        <div>
+          <p className="kicker">{c.sigKicker}</p>
+          <h2 id="sig-h">{c.sigH}</h2>
+          <p className="l-body">{c.sigP}</p>
         </div>
-      </section>
-
-      <section className="cta-band l-wrap">
-        <div className="cta-card reveal">
-          <div>
-            <h2>{c.ctaH}</h2>
-            <p>{c.ctaP}</p>
+        <article className="demo-card" aria-label="Example signal">
+          <div className="row between">
+            <span className="badge badge-high">▲ {c.card.sev}</span>
+            <span className="demo-amt">{c.card.amt}<small>{c.card.amtLabel}</small></span>
           </div>
-          <button className="btn btn-primary btn-lg" onClick={startDemo} disabled={starting}>{starting ? c.starting : c.run}</button>
-        </div>
+          <h3>{c.card.title}</h3>
+          <p>{c.card.obs}</p>
+          <p className="demo-next">{c.card.next}</p>
+          <ul className="demo-ev">
+            <li><span className="src src-pdf">PDF</span>{c.card.ev[0]}</li>
+            <li><span className="src src-csv">CSV</span>{c.card.ev[1]}</li>
+            <li><span className="src src-csv">CSV</span>{c.card.ev[2]}</li>
+          </ul>
+        </article>
       </section>
 
-      <footer className="l-wrap l-foot row between">
-        <span>{c.foot}</span>
-        <span>{c.synthetic}</span>
-      </footer>
+      <section className="l-wrap l-section" aria-labelledby="how-h">
+        <h2 id="how-h">{c.howH}</h2>
+        <ol className="how">
+          {c.how.map(([h, p], i) => (
+            <li key={h}><span className="how-n">0{i + 1}</span><strong>{h}</strong><p>{p}</p></li>
+          ))}
+        </ol>
+      </section>
+
+      <footer className="l-wrap l-foot">{c.foot}</footer>
     </div>
   );
 }

@@ -14,7 +14,7 @@ const NAV: { href: string; key: Key }[] = [
   { href: "/reviews", key: "nav.reviews" },
 ];
 
-export function Logo({ color = "#5ee6a8" }: { color?: string }) {
+export function Logo({ color = "#b8664b" }: { color?: string }) {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
       <path d="M2 12h4l3-7 4 14 3-7h6" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />

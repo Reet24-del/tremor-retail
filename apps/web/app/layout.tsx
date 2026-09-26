@@ -6,7 +6,7 @@ import { RunProvider } from "@/lib/run-context";
 
 export const metadata: Metadata = {
   title: "Tremor Retail",
-  description: "Find hidden profit leakage in a small grocery store, with proof for every finding. English and हिंदी.",
+  description: "Find hidden profit leakage for small-scale retailers, with proof for every finding. English and हिंदी.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

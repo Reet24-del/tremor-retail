@@ -31,7 +31,7 @@ export default function RunPage() {
   return (
     <main className="page">
       <PageHead title={run.status === "running" ? L("Analysing your records", "आपके रिकॉर्ड जाँचे जा रहे हैं") : run.status === "failed" ? L("Analysis failed", "जाँच पूरी नहीं हुई") : L("Analysis complete", "जाँच पूरी")}
-        desc={run.mode === "demo" ? L("Sample grocery store with synthetic data.", "सिंथेटिक डेटा वाली सैंपल किराना दुकान।") : L("Your uploaded files.", "आपकी अपलोड की गई फ़ाइलें।")}
+        desc={run.mode === "demo" ? L("Sample retail store with synthetic data.", "सिंथेटिक डेटा वाली सैंपल दुकान।") : L("Your uploaded files.", "आपकी अपलोड की गई फ़ाइलें।")}
         crumbs={<><Link href="/dashboard">{L("Overview", "डैशबोर्ड")}</Link> / Run {run.run_id}</>} />
       <section className="card card-pad stack" style={{ maxWidth: 560 }}>
         <ProcessingTimeline current={run.current_stage} completed={run.completed_stages} failed={run.failed_stage} />

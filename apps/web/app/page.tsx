@@ -17,10 +17,10 @@ import ScrollRail from "@/components/ScrollRail";
  */
 const COPY = {
   en: {
-    kicker: "Tremor Retail · for kirana stores",
+    kicker: "Tremor Retail · for small-scale retailers",
     rail: [["intro", "Intro"], ["problem", "The problem"], ["proof", "Proof"], ["signal", "What you get"], ["how", "How it works"]],
     h1: "See where your margin quietly goes.",
-    lede: "Leak detection for kirana stores, with the exact row or bill line behind every rupee.",
+    lede: "Leak detection for small-scale retailers, with the exact row or bill line behind every rupee.",
     run: "Run the sample store",
     starting: "Starting…",
     upload: "Upload my files",
@@ -54,10 +54,10 @@ const COPY = {
     foot: "Team Three Musketeers · Hack-e-Awadh 2026 · demo data is synthetic",
   },
   hi: {
-    kicker: "Tremor Retail · किराना दुकानों के लिए",
+    kicker: "Tremor Retail · छोटे खुदरा व्यापारियों के लिए",
     rail: [["intro", "शुरुआत"], ["problem", "समस्या"], ["proof", "सबूत"], ["signal", "आपको क्या मिलता है"], ["how", "कैसे काम करता है"]],
     h1: "देखिए आपका मार्जिन चुपचाप कहाँ जा रहा है।",
-    lede: "किराना दुकानों के लिए रिसाव की जाँच, हर रुपये के पीछे की पंक्ति या बिल लाइन के साथ।",
+    lede: "छोटे खुदरा व्यापारियों के लिए रिसाव की जाँच, हर रुपये के पीछे की पंक्ति या बिल लाइन के साथ।",
     run: "सैंपल दुकान चलाएँ",
     starting: "शुरू हो रहा है…",
     upload: "अपनी फ़ाइलें अपलोड करें",

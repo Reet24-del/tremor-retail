@@ -278,13 +278,13 @@ const hi: Record<Key, string> = {
 
 const DICT: Record<Lang, Record<Key, string>> = { en, hi };
 
-export function translate(lang: Lang, key: Key, vars?: Record<string, string | number | undefined>): string {
+export function translate(lang: Lang, key: Key, vars?: Record<string, string | number | null | undefined>): string {
   let s = DICT[lang][key] ?? en[key];
   if (vars) for (const [k, v] of Object.entries(vars)) s = s.replaceAll(`{${k}}`, String(v ?? ""));
   return s;
 }
 
-type Ctx = { lang: Lang; setLang: (l: Lang) => void; t: (key: Key, vars?: Record<string, string | number | undefined>) => string };
+type Ctx = { lang: Lang; setLang: (l: Lang) => void; t: (key: Key, vars?: Record<string, string | number | null | undefined>) => string };
 const LangContext = createContext<Ctx>({ lang: "en", setLang: () => {}, t: (k, v) => translate("en", k, v) });
 
 export function LangProvider({ children }: { children: React.ReactNode }) {

@@ -14,7 +14,18 @@ from .pipeline import llm
 app = FastAPI(
     title="Tremor Retail API",
     version="1.1.0",
-    responses={code: {"model": ErrorResponse} for code in (400, 404, 409, 413, 422, 500)},
+    # Explicit labels keep OpenAPI stable across Python's HTTPStatus wording changes.
+    responses={
+        code: {"model": ErrorResponse, "description": description}
+        for code, description in {
+            400: "Bad Request",
+            404: "Not Found",
+            409: "Conflict",
+            413: "Content Too Large",
+            422: "Unprocessable Content",
+            500: "Internal Server Error",
+        }.items()
+    },
     description="Evidence-backed profit leakage signals for small grocery retailers. "
     "Investigation leads only; no automatic actions.",
 )

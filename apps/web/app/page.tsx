@@ -8,6 +8,7 @@ import { Wordmark } from "@/components/AppShell";
 import { api } from "@/lib/api";
 import { LangToggle, useLang } from "@/lib/i18n";
 import { useRun } from "@/lib/run-context";
+import ScrollRail from "@/components/ScrollRail";
 
 /*
  * Landing page. The picture is the product's own data: the demo store's 90 days of margin, with the
@@ -17,6 +18,7 @@ import { useRun } from "@/lib/run-context";
 const COPY = {
   en: {
     kicker: "Tremor Retail · for kirana stores",
+    rail: [["intro", "Intro"], ["problem", "The problem"], ["proof", "Proof"], ["signal", "What you get"], ["how", "How it works"]],
     h1: "See where your margin quietly goes.",
     lede: "Leak detection for kirana stores, with the exact row or bill line behind every rupee.",
     run: "Run the sample store",
@@ -53,6 +55,7 @@ const COPY = {
   },
   hi: {
     kicker: "Tremor Retail · किराना दुकानों के लिए",
+    rail: [["intro", "शुरुआत"], ["problem", "समस्या"], ["proof", "सबूत"], ["signal", "आपको क्या मिलता है"], ["how", "कैसे काम करता है"]],
     h1: "देखिए आपका मार्जिन चुपचाप कहाँ जा रहा है।",
     lede: "किराना दुकानों के लिए रिसाव की जाँच, हर रुपये के पीछे की पंक्ति या बिल लाइन के साथ।",
     run: "सैंपल दुकान चलाएँ",
@@ -147,9 +150,10 @@ export default function Landing() {
             <Link className="l-open" href="/dashboard">{c.open} →</Link>
           </div>
         </div>
+        <ScrollRail steps={c.rail} />
       </nav>
 
-      <header className="l-wrap hero">
+      <header className="l-wrap hero" id="intro">
         <p className="kicker">{c.kicker}</p>
         <h1>{c.h1}</h1>
         <p className="lede">{c.lede}</p>
@@ -160,16 +164,16 @@ export default function Landing() {
         {err && <div className="alert alert-error" style={{ marginTop: 14, maxWidth: 520, marginInline: "auto" }}>{err}</div>}
       </header>
 
-      <div className="l-wrap">
+      <div className="l-wrap l-anchor" id="problem">
         <SalesDial copy={c.dial} />
       </div>
 
-      <section className="l-wrap statement" aria-label="Results">
+      <section className="l-wrap statement l-anchor" id="proof" aria-label="Results">
         <RevealText text={c.proof} />
         <a href={STRESS_DOC} target="_blank" rel="noreferrer">{c.proofLink} ↗</a>
       </section>
 
-      <section className="l-wrap l-section sig-section" aria-labelledby="sig-h">
+      <section className="l-wrap l-section sig-section l-anchor" id="signal" aria-labelledby="sig-h">
         <div>
           <p className="kicker">{c.sigKicker}</p>
           <h2 id="sig-h">{c.sigH}</h2>
@@ -191,7 +195,7 @@ export default function Landing() {
         </article>
       </section>
 
-      <section className="l-wrap l-section" aria-labelledby="how-h">
+      <section className="l-wrap l-section l-anchor" id="how" aria-labelledby="how-h">
         <h2 id="how-h">{c.howH}</h2>
         <ol className="how">
           {c.how.map(([h, p], i) => (

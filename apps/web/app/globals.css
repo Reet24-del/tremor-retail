@@ -213,7 +213,7 @@ tr.hl td { background: var(--medium-soft); }
 html[lang="hi"] .section h3, html[lang="hi"] .eyebrow, [lang="hi"] .eyebrow { letter-spacing: 0; text-transform: none; }
 
 /* ---------- Landing (quiet, editorial) ---------- */
-.landing { background: var(--bg); min-height: 100vh; overflow-x: hidden; }
+.landing { background: var(--bg); min-height: 100vh; overflow-x: clip; }
 .l-wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
 .l-wrap-wide { max-width: 1320px; margin: 0 auto; padding: 0 12px; }
 .l-nav { position: sticky; top: 0; z-index: 30; background: rgba(245, 241, 234, 0.85); backdrop-filter: blur(14px); }
@@ -303,3 +303,23 @@ html[lang="hi"] .hero h1 { line-height: 1.25; letter-spacing: 0; font-size: clam
   .impact { text-align: left; }
   .page-head { flex-direction: column; }
 }
+
+/* ---------- Landing scroll rail ---------- */
+.rail { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.rail-in { position: relative; max-width: 1080px; margin: 0 auto; height: 46px; padding: 0 64px; }
+.rail-track { position: absolute; left: 64px; right: 64px; top: 15px; height: 2px; background: var(--border-strong); }
+.rail-fill { position: absolute; inset: 0; background: var(--accent); transform-origin: left center; transform: scaleX(0);
+  transition: transform 0.12s linear; }
+.rail ol { list-style: none; margin: 0; padding: 0; position: absolute; left: 64px; right: 64px; top: 0; bottom: 0; }
+.rail li { position: absolute; top: 9px; transform: translateX(-50%); }
+.rail a { display: flex; flex-direction: column; align-items: center; gap: 5px; color: var(--text-3); }
+.rail a:hover { text-decoration: none; color: var(--text); }
+.rail-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--bg); border: 2px solid var(--border-strong);
+  transition: background 0.2s, border-color 0.2s; }
+.rail li.on .rail-dot { background: var(--accent); border-color: var(--accent); }
+.rail li.on a { color: var(--text); }
+.rail-label { font-size: 11px; white-space: nowrap; letter-spacing: 0.02em; }
+.l-anchor { scroll-margin-top: 130px; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .rail-fill, .rail-dot { transition: none; } }
+@media (max-width: 700px) { .rail-label { display: none; } .rail-in { height: 32px; } }

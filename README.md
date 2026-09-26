@@ -4,7 +4,7 @@
 
 Built for **PS-06: AI Signal Intelligence Challenge (MacroVision AI)** at Hack-e-Awadh 2026 by **Team Three Musketeers**.
 
-> Demo: `[add deployed URL]` · Video: `[add fallback recording link]`
+> Demo: https://tremor-opal.vercel.app · API: https://tremor-retail-production.up.railway.app/api/health · Video: `[add fallback recording link]`
 
 ---
 
@@ -120,7 +120,7 @@ paraphrases are rejected. Human reviews remain separate from invoice-field corre
 Backend verification: 54 tests pass; the frozen fixture detects 5/5 signals with 5/5 precision and 45/45 claim coverage.
 The ten-store CI stress set (seeds 3000–3009) matches the original backend at 38/41 recall and 38/38 precision.
 Three consecutive local HTTP smoke runs verified the INR 1,680 hero signal, original evidence pages, and saved reviews.
-Live Groq and public-host verification remain pending a configured key and deployment; mocked-provider tests are included.
+Deployed: web on Vercel (tremor-opal.vercel.app), API on Railway with Groq enabled; the sample run was verified end to end on the live site. Mocked-provider tests are also included.
 
 ## 10. What works
 

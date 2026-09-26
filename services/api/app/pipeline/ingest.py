@@ -35,6 +35,22 @@ class CsvResult:
     summary: dict = field(default_factory=dict)
 
 
+SUMMARY_REPORT_MESSAGE = (
+    "This looks like a summary report (totals by category or month), not a sales and stock file. "
+    "Tremor needs the detailed records: one row per product per day with quantity sold, selling price and "
+    "opening and closing stock. Download the example CSV to see the format."
+)
+_SUMMARY_HINTS = ("total", "summary", "report", "margin %", "share of", "gross profit", "commentary", "target")
+
+
+def _looks_like_summary_report(content: bytes) -> bool:
+    """True for exported management reports (title rows, totals, commentary) rather than transaction rows."""
+    head = content[:4000].decode("utf-8", errors="ignore").lower()
+    has_required = sum(c in head for c in REQUIRED) >= 3
+    hints = sum(h in head for h in _SUMMARY_HINTS)
+    return not has_required and hints >= 3
+
+
 def _rows(mask: pd.Series, df: pd.DataFrame, limit: int = 8) -> str:
     rows = df.loc[mask, "source_row"].tolist()
     more = f" and {len(rows) - limit} more" if len(rows) > limit else ""
@@ -44,11 +60,21 @@ def _rows(mask: pd.Series, df: pd.DataFrame, limit: int = 8) -> str:
 def load_sales_csv(content: bytes) -> CsvResult:
     try:
         df = pd.read_csv(io.BytesIO(content), dtype=str, keep_default_na=False)
-    except Exception as exc:
-        return CsvResult(None, [f"Could not read the file as CSV: {exc}"])
+    except Exception:
+        if _looks_like_summary_report(content):
+            return CsvResult(None, [SUMMARY_REPORT_MESSAGE])
+        return CsvResult(
+            None,
+            [
+                "Could not read the file as a table. Tremor needs one header row followed by one row per sale, "
+                "with the same number of columns in every row."
+            ],
+        )
     df.columns = [c.strip().lower() for c in df.columns]
     missing = [c for c in REQUIRED if c not in df.columns]
     if missing:
+        if _looks_like_summary_report(content):
+            return CsvResult(None, [SUMMARY_REPORT_MESSAGE], summary={"columns": list(df.columns), "row_count": len(df)})
         return CsvResult(
             None, [f"Missing required column: {c}" for c in missing], summary={"columns": list(df.columns), "row_count": len(df)}
         )

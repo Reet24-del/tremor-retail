@@ -166,3 +166,15 @@ def test_hindi_accusations_are_blocked():
 
     assert prohibited_phrases("यह चोरी है")
     assert prohibited_phrases("स्टॉक का हिसाब मेल नहीं खा रहा") == []
+
+
+def test_summary_report_gets_a_plain_explanation():
+    from app.pipeline.ingest import SUMMARY_REPORT_MESSAGE, load_sales_csv
+
+    report = (
+        b'"Monthly Sales Report"\n"Period","2026-08-27 to 2026-09-25"\n\n'
+        b'"Category","Units","Revenue","Cost","Gross Profit","Margin %"\n"Kitchenware",3120,48360,27080,21280.00,44.0\n'
+        b'"Total",3120,48360,27080,21280.00,44.0\n'
+    )
+    res = load_sales_csv(report)
+    assert res.errors == [SUMMARY_REPORT_MESSAGE]

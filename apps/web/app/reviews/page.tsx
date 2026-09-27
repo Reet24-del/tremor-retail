@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import ReviewSuggestions from "@/components/ReviewSuggestions";
 import { Loading, PageHead, SeverityBadge } from "@/components/ui";
 import { api } from "@/lib/api";
 import { dateTime, inr, titleCase } from "@/lib/format";
@@ -16,10 +17,14 @@ export default function ReviewsPage() {
   const [reviews, setReviews] = useState<Review[] | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
+  const runId = run?.run_id;
+  const load = useCallback(() => {
+    if (!runId) return;
+    api.reviews(runId).then((r) => setReviews(r.reviews)).catch((e) => setErr(e.message));
+  }, [runId]);
   useEffect(() => {
-    if (!run) return;
-    api.reviews(run.run_id).then((r) => setReviews(r.reviews)).catch((e) => setErr(e.message));
-  }, [run?.run_id, run]);
+    load();
+  }, [load]);
 
   if (loading) return <main className="page"><Loading /></main>;
   const counts = (reviews ?? []).reduce<Record<string, number>>((a, r) => ({ ...a, [r.outcome]: (a[r.outcome] ?? 0) + 1 }), {});
@@ -31,6 +36,9 @@ export default function ReviewsPage() {
       {!run ? <div className="card empty"><h3>{L("No analysis yet", "अभी कोई जाँच नहीं")}</h3><p><Link href="/dashboard">{L("Start from the Overview", "डैशबोर्ड से शुरू करें")}</Link>.</p></div>
         : !reviews ? <Loading label="Loading reviews" /> : (
           <div className="stack">
+            {run.status === "completed" && (
+              <ReviewSuggestions runId={run.run_id} reviewed={new Set(reviews.map((r) => r.signal_id))} onSaved={load} />
+            )}
             <div className="row">
               {(["confirmed", "dismissed", "unresolved"] as const).map((o) => (
                 <span key={o} className="badge badge-neutral">{titleCase(o)}: {counts[o] ?? 0}</span>
